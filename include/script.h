@@ -75,4 +75,7 @@ bool8 IsMsgBoxWalkawayDisabled(void);
 extern const u8 *gRamScriptRetAddr;
 extern u8 gWalkAwayFromSignInhibitTimer;
 
+// Custom Starter
+void ChooseCustomStarterFromMenu(void);
+
 #endif // GUARD_SCRIPT_H

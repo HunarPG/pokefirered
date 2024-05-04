@@ -29,9 +29,15 @@
 #include "berry_powder.h"
 #include "pokemon_jump.h"
 #include "event_scripts.h"
+// Custom Starter
+#include "oak_speech.h"
+#include "pokedex_screen.h"
 
 // this file's functions
 static void ResetMiniGamesResults(void);
+
+// Custom Starter
+static void AddCustomStarterToPlayerTeam(void);
 
 // EWRAM vars
 EWRAM_DATA bool8 gDifferentSaveFile = FALSE;
@@ -149,6 +155,9 @@ void NewGameInitData(void)
     RunScriptImmediately(EventScript_ResetAllMapFlags);
     StringCopy(gSaveBlock1Ptr->rivalName, rivalName);
     ResetTrainerTowerResults();
+    // Custom Starter
+    if (gCustomStarterStructPtr->isStarterPrepared)
+    AddCustomStarterToPlayerTeam();
 }
 
 static void ResetMiniGamesResults(void)
@@ -157,4 +166,41 @@ static void ResetMiniGamesResults(void)
     SetBerryPowder(&gSaveBlock2Ptr->berryCrush.berryPowderAmount, 0);
     ResetPokemonJumpRecords();
     CpuFill16(0, &gSaveBlock2Ptr->berryPick, sizeof(struct BerryPickingResults));
+}
+
+// Custom Starter
+void AddCustomStarterToPlayerTeam(void)
+{
+    struct Pokemon customStarter;
+    u8 nationalDexNum;
+
+    // Create the mon at lvl 5 with the specified nature
+    CreateMonWithNature(&customStarter, gCustomStarterStructPtr->speciesId, 5, 32, gCustomStarterStructPtr->natureId);
+
+    // Set the IVs
+    SetMonData(&customStarter, MON_DATA_HP_IV, &gCustomStarterStructPtr->hpIV);
+    SetMonData(&customStarter, MON_DATA_ATK_IV, &gCustomStarterStructPtr->atkIV);
+    SetMonData(&customStarter, MON_DATA_DEF_IV, &gCustomStarterStructPtr->defIV);
+    SetMonData(&customStarter, MON_DATA_SPATK_IV, &gCustomStarterStructPtr->spatkIV);
+    SetMonData(&customStarter, MON_DATA_SPDEF_IV, &gCustomStarterStructPtr->spdefIV);
+    SetMonData(&customStarter, MON_DATA_SPEED_IV, &gCustomStarterStructPtr->spdIV);
+
+    // Update the stats
+    CalculateMonStats(&customStarter);
+
+    // Set Player Data on mon
+    SetMonData(&customStarter, MON_DATA_OT_NAME, gSaveBlock2Ptr->playerName);
+    SetMonData(&customStarter, MON_DATA_OT_GENDER, &gSaveBlock2Ptr->playerGender);
+
+    // Add mon to first slot in party and update the global var
+    CopyMon(&gPlayerParty[0], &customStarter, sizeof(customStarter));
+    gPlayerPartyCount = 1;
+
+    // Update Natdex seen & caught
+    nationalDexNum = SpeciesToNationalPokedexNum(gCustomStarterStructPtr->speciesId);
+    GetSetPokedexFlag(nationalDexNum, FLAG_SET_SEEN);
+    GetSetPokedexFlag(nationalDexNum, FLAG_SET_CAUGHT);
+
+    // Free up the struct
+    Free(gCustomStarterStructPtr);
 }

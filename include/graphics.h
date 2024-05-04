@@ -4549,4 +4549,7 @@ extern const u16 gPokeStorageInterface_NoDisplayMon_Pal[];
 extern const u16 gDexScreen_TopMenuIconPals_AtoZ[];
 extern const u32 gDexScreen_TopMenuIconTiles_AtoZ[];
 
+//Custom Starter
+extern const u16 gMessageBox_Pal[];
+
 #endif //GUARD_GRAPHICS_H

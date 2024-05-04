@@ -16,6 +16,20 @@
 #include "random.h"
 #include "data.h"
 #include "constants/songs.h"
+// Custom Starter Stuff
+#include "oak_speech.h"
+#include "string_util.h"
+#include "window.h"
+#include "event_object_lock.h"
+#include "field_player_avatar.h"
+#include "pokedex.h"
+#include "pokemon.h"
+#include "pokemon_summary_screen.h"
+#include "pokemon_icon.h"
+#include "script_pokemon_util.h"
+#include "map_name_popup.h"
+#include "sound.h"
+#include "constants/items.h"
 
 #define INTRO_SPECIES SPECIES_NIDORAN_F
 
@@ -105,6 +119,31 @@ static void CreateFadeInTask(u8, u8);
 static void CreateFadeOutTask(u8, u8);
 static void PrintNameChoiceOptions(u8, u8);
 static void GetDefaultName(u8, u8);
+
+// Custom Starter
+/*
+It goes like this:
+- Task_CreateCustomStarterChoiceMenu
+- Task_HandleCustomStarterChoiceMenuInput
+- Task_HandleCustomStarterMenuRefresh
+- Task_HandleCustomStarterInputNature
+- Task_HandleCustomStarterMenuRefresh
+- Task_HandleCustomStarterInputIVs
+- Task_HandleCustomStarterMenuRefresh
+- Task_PrepareCustomStarterForNewGame which finishes off in NewGameInitData()
+*/
+// Task_HandleCustomStarterMenuRefresh is mostly redundant if the ability to go back to previous options is excluded
+static void LoadCustomStarterIcon(u8 taskId);
+static void Task_HandleCustomStarterInputNature(u8 taskId);
+static void Task_HandleCustomStarterInputIVs(u8 taskId);
+static void Task_HandleCustomStarterMenuRefresh(u8 taskId);
+static void Task_HandleCustomStarterChoiceMenuInput(u8 taskId);
+static void Task_CreateCustomStarterChoiceMenu(u8 taskId);
+static void Task_PrepareCustomStarterForNewGame(u8 taskId);
+
+EWRAM_DATA struct CustomStarter *gCustomStarterStructPtr = NULL;
+
+static const u8 sTellPlayerAboutCustomStarter[] = _("Please input the species number for a\ncustom starter.");
 
 extern const u8 gText_Controls[];
 extern const u8 gText_ABUTTONNext[];
@@ -786,7 +825,8 @@ static void Task_NewGameScene(u8 taskId)
         ShowBg(1);
         SetVBlankCallback(VBlankCB_NewGameScene);
         PlayBGM(MUS_NEW_GAME_INSTRUCT);
-        gTasks[taskId].func = Task_ControlsGuide_HandleInput;
+        // Redirect to our tasks
+        gTasks[taskId].func = Task_CreateCustomStarterChoiceMenu;
         gMain.state = 0;
         return;
     }
@@ -2157,6 +2197,414 @@ static void GetDefaultName(u8 hasPlayerBeenNamed, u8 rivalNameChoice)
         dest[i] = src[i];
     for (; i < PLAYER_NAME_LENGTH + 1; i++)
         dest[i] = EOS;
+}
+
+// Custom Starter
+enum
+{
+    CUSTOM_STARTER_CREATE_MENU,
+    CUSTOM_STARTER_HANDLE_SPECIES,
+    CUSTOM_STARTER_HANDLE_IVS,
+    CUSTOM_STARTER_HANDLE_NATURE,
+    CUSTOM_STARTER_SET_UP_GIVE_MON_AND_RETURN_TASK,  // The task is passed on to Birch's stuff here
+};
+
+static const u8 sCustomStarterText_ID[]         =   _("Species:  {STR_VAR_3}\nName: {STR_VAR_1}    \n\n{STR_VAR_2}");
+static const u8 sCustomStarterText_Nature[]     =   _("Name:  {STR_VAR_3}\nNature: {STR_VAR_1}    \n\n{STR_VAR_2}");
+
+static const u8 sCustomStarterText_HpIV[]       =   _("IV Hp:                    \n    {STR_VAR_3}            \n             \n{STR_VAR_2}          ");
+static const u8 sCustomStarterText_AtkIV[]      =   _("IV Attack:               \n    {STR_VAR_3}            \n             \n{STR_VAR_2}          ");
+static const u8 sCustomStarterText_DefIV[]      =   _("IV Defense:               \n    {STR_VAR_3}            \n             \n{STR_VAR_2}          ");
+static const u8 sCustomStarterText_SpatkIV[]    =   _("IV Sp. Attack:               \n    {STR_VAR_3}            \n             \n{STR_VAR_2}          ");
+static const u8 sCustomStarterText_SpdefIV[]    =   _("IV Sp. Defense:               \n    {STR_VAR_3}            \n             \n{STR_VAR_2}          ");
+static const u8 sCustomStarterText_SpdIV[]      =   _("IV Speed:               \n    {STR_VAR_3}            \n             \n{STR_VAR_2}          ");
+
+static const u8 digitInidicator_1[]    =   _("{LEFT_ARROW}+1{RIGHT_ARROW}        ");
+static const u8 digitInidicator_5[]    =   _("{LEFT_ARROW}+5{RIGHT_ARROW}        ");
+static const u8 digitInidicator_10[]   =   _("{LEFT_ARROW}+10{RIGHT_ARROW}       ");
+static const u8 digitInidicator_25[]   =   _("{LEFT_ARROW}+25{RIGHT_ARROW}       ");
+static const u8 digitInidicator_50[]   =   _("{LEFT_ARROW}+50{RIGHT_ARROW}       ");
+static const u8 digitInidicator_100[]  =   _("{LEFT_ARROW}+100{RIGHT_ARROW}      ");
+
+static const u8 *const sText_DigitIndicator[] =
+{
+    digitInidicator_1,
+    digitInidicator_5,
+    digitInidicator_10,
+    digitInidicator_25,
+    digitInidicator_50,
+    digitInidicator_100
+};
+
+static const u8 sPowersofDigitIndicator[] = {1, 5, 10, 25, 50, 100}; 
+
+static const struct WindowTemplate sCustomStarterDisplayWindowTemplate =
+{
+    .bg = 0,
+    .tilemapLeft = 9, //1
+    .tilemapTop = 4,  //1
+    .width = 12, 
+    .height = 8,
+    .paletteNum = 15,
+    .baseBlock = 1,
+};
+
+void Task_PrepareCustomStarterForNewGame(u8 taskId)
+{
+    gCustomStarterStructPtr->funcId = CUSTOM_STARTER_SET_UP_GIVE_MON_AND_RETURN_TASK;
+    gCustomStarterStructPtr->isStarterPrepared = TRUE;     // Since this is true, in NewGameInitData the starter will be added
+
+    // Destroy the Icon Sprite
+    DestroyMonIcon(&gSprites[gCustomStarterStructPtr->monSpriteIconId]);
+    FreeMonIconPalettes();
+
+    // Clean up window
+    ClearStdWindowAndFrame(gCustomStarterStructPtr->windowId, TRUE);
+    RemoveWindow(gCustomStarterStructPtr->windowId);
+
+    // Return to Birch's task
+    /*InitWindows(sNewGameBirchSpeechTextWindows);
+    LoadMainMenuWindowFrameTiles(0, 0xF3);
+    LoadMessageBoxGfx(0, 0xFC, BG_PLTT_ID(15));
+    NewGameBirchSpeech_ShowDialogueWindow(0, 1);
+    PutWindowTilemap(0);
+    CopyWindowToVram(0, COPYWIN_GFX);*/
+
+    gTasks[taskId].func = Task_ControlsGuide_HandleInput;
+}
+
+// Self Explanatory
+void LoadCustomStarterIcon(u8 taskId)
+{
+    // Destroy the old sprite and reload the new one
+    DestroyMonIcon(&gSprites[gCustomStarterStructPtr->monSpriteIconId]);              // Destroy previous icon
+    FreeMonIconPalettes();                                                                      // Free space for new pallete
+    LoadMonIconPalette(gCustomStarterStructPtr->speciesId);                                        // Loads pallete for current mon
+    gCustomStarterStructPtr->monSpriteIconId = CreateMonIcon(gCustomStarterStructPtr->speciesId, SpriteCB_MonIcon, 150, 70, 4, 0, 0); //Create pokemon sprite
+    gSprites[gCustomStarterStructPtr->monSpriteIconId].oam.priority = 0;
+}
+
+// Handles setting the IVs
+void Task_HandleCustomStarterInputIVs(u8 taskId)
+{
+    s16 *currentIVtoSetPtr;
+    const u8 *currentIVText;
+
+    gCustomStarterStructPtr->funcId = CUSTOM_STARTER_HANDLE_IVS;
+
+    switch (gCustomStarterStructPtr->IVsCounter)  // Decides the right IV/IV-related thing to use
+    {
+        case 0: // HP IV
+            currentIVtoSetPtr = &gCustomStarterStructPtr->hpIV;
+            currentIVText = sCustomStarterText_HpIV;
+            break;
+        case 1: // ATK IV
+            currentIVtoSetPtr = &gCustomStarterStructPtr->atkIV;
+            currentIVText = sCustomStarterText_AtkIV;
+            break;
+        case 2: // DEF IV
+            currentIVtoSetPtr = &gCustomStarterStructPtr->defIV;
+            currentIVText = sCustomStarterText_DefIV;
+            break;
+        case 3: // SPATK IV
+            currentIVtoSetPtr = &gCustomStarterStructPtr->spatkIV;
+            currentIVText = sCustomStarterText_SpatkIV;
+            break;
+        case 4: // SPDEF IV
+            currentIVtoSetPtr = &gCustomStarterStructPtr->spdefIV;
+            currentIVText = sCustomStarterText_SpdefIV;
+            break;
+        case 5: // SPEED IV
+            currentIVtoSetPtr = &gCustomStarterStructPtr->spdIV;
+            currentIVText = sCustomStarterText_SpdIV;
+            break;
+    }
+
+    // Reload the names. There might be a noticable drop in performance because of this code chunk's position, I'll optimize it later
+    StringCopy(gStringVar2, sText_DigitIndicator[gCustomStarterStructPtr->digitSelectedIndex]);
+    ConvertIntToDecimalStringN(gStringVar3, *currentIVtoSetPtr, STR_CONV_MODE_LEADING_ZEROS, 2);       // Reload IV
+    StringCopyPadded(gStringVar3, gStringVar3, CHAR_SPACE, 15);
+    StringExpandPlaceholders(gStringVar4, currentIVText);
+    AddTextPrinterParameterized(gCustomStarterStructPtr->windowId, 1, gStringVar4, 1, 1, 0, NULL);
+
+    if (JOY_NEW(DPAD_ANY))
+    {
+        PlaySE(SE_SELECT);
+
+        // Deals with selecting a value for an IV
+        if (JOY_NEW(DPAD_UP))
+        {
+            *currentIVtoSetPtr += sPowersofDigitIndicator[gCustomStarterStructPtr->digitSelectedIndex];
+            if (*currentIVtoSetPtr > MAX_PER_STAT_IVS)
+                *currentIVtoSetPtr = MAX_PER_STAT_IVS;
+        }
+        if (JOY_NEW(DPAD_DOWN))
+        {
+            *currentIVtoSetPtr -= sPowersofDigitIndicator[gCustomStarterStructPtr->digitSelectedIndex];
+            if (*currentIVtoSetPtr < 0)
+                *currentIVtoSetPtr = 0;
+        }
+        // Deals with changing the digit indicator
+        if (JOY_NEW(DPAD_LEFT))
+        {
+            if (gCustomStarterStructPtr->digitSelectedIndex > 0)
+                gCustomStarterStructPtr->digitSelectedIndex -= 1;
+        }
+        if (JOY_NEW(DPAD_RIGHT))
+        {
+            if (gCustomStarterStructPtr->digitSelectedIndex < (ARRAY_COUNT(sPowersofDigitIndicator) - 1))
+                gCustomStarterStructPtr->digitSelectedIndex += 1;
+        }
+
+        // Reload names
+        /*StringCopy(gStringVar2, sText_DigitIndicator[gCustomStarterStructPtr->digitSelectedIndex]);
+        ConvertIntToDecimalStringN(gStringVar3, *currentIVtoSetPtr, STR_CONV_MODE_LEADING_ZEROS, 2);       // Reload IV
+        StringCopyPadded(gStringVar3, gStringVar3, CHAR_SPACE, 15);
+        StringExpandPlaceholders(gStringVar4, currentIVText);
+        AddTextPrinterParameterized(gCustomStarterStructPtr->windowId, 1, gStringVar4, 1, 1, 0, NULL);*/
+
+        //LoadCustomStarterIcon(taskId);
+    }
+
+    if (JOY_NEW(A_BUTTON | B_BUTTON))
+    {
+        if (JOY_NEW(B_BUTTON))
+        {
+            if (gCustomStarterStructPtr->IVsCounter > 0)
+                gCustomStarterStructPtr->IVsCounter--;     // Move to previous IV
+        }
+
+        if (gCustomStarterStructPtr->IVsCounter < 5)  // All IVs have not been inputed
+        {
+            gCustomStarterStructPtr->IVsCounter++;     // Move on to next IV
+        }
+        else  // All IVs have been inputted
+        {
+            // Move on to the next task
+            gTasks[taskId].func = Task_HandleCustomStarterMenuRefresh;
+        }
+    }
+}
+
+// Handles setting the nature
+void Task_HandleCustomStarterInputNature(u8 taskId)
+{
+    gCustomStarterStructPtr->funcId = CUSTOM_STARTER_HANDLE_NATURE;
+
+    if (JOY_NEW(DPAD_ANY))
+    {
+        PlaySE(SE_SELECT);
+
+        // Deals with selecting a nature
+        if (JOY_NEW(DPAD_UP))
+        {
+            gCustomStarterStructPtr->natureId += sPowersofDigitIndicator[gCustomStarterStructPtr->digitSelectedIndex];
+            if (gCustomStarterStructPtr->natureId > (NUM_NATURES - 1))
+                gCustomStarterStructPtr->natureId = (NUM_NATURES - 1);
+        }
+        if (JOY_NEW(DPAD_DOWN))
+        {
+            gCustomStarterStructPtr->natureId -= sPowersofDigitIndicator[gCustomStarterStructPtr->digitSelectedIndex];
+            if (gCustomStarterStructPtr->natureId < 0)
+                gCustomStarterStructPtr->natureId = 0;
+        }
+        // Deals with changing the digit indicator
+        if (JOY_NEW(DPAD_LEFT))
+        {
+            if (gCustomStarterStructPtr->digitSelectedIndex > 0)
+                gCustomStarterStructPtr->digitSelectedIndex -= 1;
+        }
+        if (JOY_NEW(DPAD_RIGHT))
+        {
+            if (gCustomStarterStructPtr->digitSelectedIndex < (ARRAY_COUNT(sPowersofDigitIndicator) - 1))
+                gCustomStarterStructPtr->digitSelectedIndex += 1;
+        }
+
+        // Update the text and then re-print it
+        StringCopy(gStringVar2, sText_DigitIndicator[gCustomStarterStructPtr->digitSelectedIndex]);              // Reloads the Digit indicator
+        StringCopy(gStringVar1, gNatureNamePointers[gCustomStarterStructPtr->natureId]);                         // Reloads the Nature Name
+        StringCopyPadded(gStringVar1, gStringVar1, CHAR_SPACE, 15);
+        StringCopy(gStringVar3, gSpeciesNames[gCustomStarterStructPtr->speciesId]);                              // Reloads the Species Name
+        StringExpandPlaceholders(gStringVar4, sCustomStarterText_Nature);
+        AddTextPrinterParameterized(gCustomStarterStructPtr->windowId, 1, gStringVar4, 1, 1, 0, NULL);
+    }
+
+    if (JOY_NEW(A_BUTTON | B_BUTTON))
+    {
+        PlaySE(MUS_LEVEL_UP);
+
+        // Randomize nature
+        if (JOY_NEW(B_BUTTON))
+            gCustomStarterStructPtr->natureId = Random() % (NUM_NATURES - 1);
+
+        // Move on to the next task
+        gTasks[taskId].func = Task_HandleCustomStarterMenuRefresh;
+    }
+}
+
+// When switching between the menus for species, ivs, nature, etc This will refresh the page instea of waiting till a button is pressed
+void Task_HandleCustomStarterMenuRefresh(u8 taskId)
+{
+    // Tbf, this function might be a bit redundant. It would be far more useful if you could go back to previous options
+    gCustomStarterStructPtr->digitSelectedIndex = 0;           // Reset this
+
+    switch (gCustomStarterStructPtr->funcId)
+    {
+        case CUSTOM_STARTER_CREATE_MENU:
+            break;
+
+        case CUSTOM_STARTER_HANDLE_SPECIES:
+            StringCopy(gStringVar2, sText_DigitIndicator[gCustomStarterStructPtr->digitSelectedIndex]);              // Refreshes the Digit indicator
+            StringCopy(gStringVar1, gNatureNamePointers[gCustomStarterStructPtr->natureId]);                         // Refreshes the Nature Name
+            StringCopyPadded(gStringVar1, gStringVar1, CHAR_SPACE, 15);
+            StringCopy(gStringVar3, gSpeciesNames[gCustomStarterStructPtr->speciesId]);                              // Refreshes the Species Name
+            StringExpandPlaceholders(gStringVar4, sCustomStarterText_Nature);
+            AddTextPrinterParameterized(gCustomStarterStructPtr->windowId, 1, gStringVar4, 1, 1, 0, NULL);
+
+            // Move on to next task
+            gTasks[taskId].func = Task_HandleCustomStarterInputNature;
+            break;
+
+        case CUSTOM_STARTER_HANDLE_IVS:
+            gTasks[taskId].func = Task_PrepareCustomStarterForNewGame;
+            break;
+
+        case CUSTOM_STARTER_HANDLE_NATURE:
+            StringCopy(gStringVar2, sText_DigitIndicator[gCustomStarterStructPtr->digitSelectedIndex]);
+            ConvertUIntToDecimalStringN(gStringVar3, gCustomStarterStructPtr->hpIV, STR_CONV_MODE_LEADING_ZEROS, 2);       // Reload IV
+            StringCopyPadded(gStringVar3, gStringVar3, CHAR_SPACE, 15);
+            StringExpandPlaceholders(gStringVar4, sCustomStarterText_HpIV);
+            AddTextPrinterParameterized(gCustomStarterStructPtr->windowId, 1, gStringVar4, 1, 1, 0, NULL);
+
+            gCustomStarterStructPtr->IVsCounter = 0; // Reset this
+            // Move on to next task
+            gTasks[taskId].func = Task_HandleCustomStarterInputIVs;
+            break;
+
+        case CUSTOM_STARTER_SET_UP_GIVE_MON_AND_RETURN_TASK:
+            break;
+
+    }
+}
+
+// This runs every frame, recieves input and updates the information shown for the mon
+void Task_HandleCustomStarterChoiceMenuInput(u8 taskId)
+{
+    gCustomStarterStructPtr->funcId = CUSTOM_STARTER_HANDLE_SPECIES;
+
+    if (JOY_NEW(DPAD_ANY))
+    {
+        PlaySE(SE_SELECT);
+
+        // Deals with selecting a mon
+        if (JOY_NEW(DPAD_UP))
+        {
+            gCustomStarterStructPtr->speciesId += sPowersofDigitIndicator[gCustomStarterStructPtr->digitSelectedIndex];
+            if (gCustomStarterStructPtr->speciesId >= NUM_SPECIES - 1)
+                gCustomStarterStructPtr->speciesId = NUM_SPECIES - 1;
+
+            // Unown B till Z have no icons so skip
+            if (gCustomStarterStructPtr->speciesId >= SPECIES_OLD_UNOWN_B && gCustomStarterStructPtr->speciesId <= SPECIES_OLD_UNOWN_Z)
+                gCustomStarterStructPtr->speciesId = SPECIES_TREECKO;
+        }
+        if (JOY_NEW(DPAD_DOWN))
+        {
+            gCustomStarterStructPtr->speciesId -= sPowersofDigitIndicator[gCustomStarterStructPtr->digitSelectedIndex];
+            if (gCustomStarterStructPtr->speciesId < 1)
+                gCustomStarterStructPtr->speciesId = 1;
+
+            // Unown B till Z have no icons so skip
+            if (gCustomStarterStructPtr->speciesId >= SPECIES_OLD_UNOWN_B && gCustomStarterStructPtr->speciesId <= SPECIES_OLD_UNOWN_Z)
+                gCustomStarterStructPtr->speciesId = SPECIES_CELEBI;
+        }
+        // Deals with changing the digit indicator
+        if (JOY_NEW(DPAD_LEFT))
+        {
+            if (gCustomStarterStructPtr->digitSelectedIndex > 0)
+                gCustomStarterStructPtr->digitSelectedIndex -= 1;
+        }
+        if (JOY_NEW(DPAD_RIGHT))
+        {
+            if (gCustomStarterStructPtr->digitSelectedIndex < (ARRAY_COUNT(sPowersofDigitIndicator) - 1))
+                gCustomStarterStructPtr->digitSelectedIndex += 1;
+        }
+
+        // Update the text and then re-print it
+        StringCopy(gStringVar2, sText_DigitIndicator[gCustomStarterStructPtr->digitSelectedIndex]);                   // Reloads the Digit indicator
+        StringCopy(gStringVar1, gSpeciesNames[gCustomStarterStructPtr->speciesId]);                                   // Reloads the Species Name
+        StringCopyPadded(gStringVar1, gStringVar1, CHAR_SPACE, 15);
+        ConvertIntToDecimalStringN(gStringVar3, gCustomStarterStructPtr->speciesId, STR_CONV_MODE_LEADING_ZEROS, 3);  // Natdex Num
+        StringExpandPlaceholders(gStringVar4, sCustomStarterText_ID);
+        AddTextPrinterParameterized(gCustomStarterStructPtr->windowId, 1, gStringVar4, 1, 1, 0, NULL);
+
+        LoadCustomStarterIcon(taskId);
+    }
+
+    // Handle the A_BUTTON/B_BUTTON input
+    if (JOY_NEW(A_BUTTON | B_BUTTON))
+    {
+        // Clean up and move on
+        PlaySE(MUS_LEVEL_UP);
+
+        // Randomize Starter
+        if (JOY_NEW(B_BUTTON))
+            gCustomStarterStructPtr->speciesId = Random() % (NUM_SPECIES - 1);
+            if (gCustomStarterStructPtr->speciesId == SPECIES_NONE)
+                gCustomStarterStructPtr->speciesId == SPECIES_BULBASAUR;       // The bulbuous one is a backup
+
+        // Move on to next task
+        gTasks[taskId].func = Task_HandleCustomStarterMenuRefresh;
+    }
+}
+
+// Runs once to freeze the player, print the window and sample data of the mon
+void Task_CreateCustomStarterChoiceMenu(u8 taskId)
+{
+    // Only run when the text is done printing
+    if (!RunTextPrinters_CheckPrinter0Active())
+    {
+        // General Data initialization and others
+        gCustomStarterStructPtr = Alloc(sizeof(struct CustomStarter));
+        memset(gCustomStarterStructPtr, 0, sizeof(struct CustomStarter));          // Initialize to 0
+        // Remove the window for birches dialogue since it will glitch out HORRIBLY
+        //ClearStdWindowAndFrame(0, TRUE);
+        //RemoveWindow(0);
+        // Couple of stuff
+        //gSprites[gTasks[taskId].data[9]].oam.priority = 1;                      // data[9] = Lotad Sprite Id. So that Lotad's Sprite doesn't chop the menu
+        gCustomStarterStructPtr->speciesId = SPECIES_BULBASAUR;                    // Bulbuous Saur
+        gCustomStarterStructPtr->funcId = CUSTOM_STARTER_CREATE_MENU;
+        // Initialize all IVs to the maximum value
+        gCustomStarterStructPtr->hpIV = MAX_PER_STAT_IVS;
+        gCustomStarterStructPtr->atkIV = MAX_PER_STAT_IVS;
+        gCustomStarterStructPtr->defIV = MAX_PER_STAT_IVS;
+        gCustomStarterStructPtr->spatkIV = MAX_PER_STAT_IVS;
+        gCustomStarterStructPtr->spdefIV = MAX_PER_STAT_IVS;
+        gCustomStarterStructPtr->spdIV = MAX_PER_STAT_IVS;
+        // Load in the right palette fo the texbox
+        LoadPalette(GetTextWindowPalette(0), 0xF0, 0x20);
+
+        // Create our window
+        InitStandardTextBoxWindows();
+        gCustomStarterStructPtr->windowId = AddWindow(&sCustomStarterDisplayWindowTemplate);
+        DrawStdWindowFrame(gCustomStarterStructPtr->windowId, TRUE);
+
+        // Load in the Text and Number
+        StringCopy(gStringVar2, sText_DigitIndicator[0]);
+        ConvertIntToDecimalStringN(gStringVar3, 1, STR_CONV_MODE_LEADING_ZEROS, 3);         //This will give 001 (Bulbuous Saur's Natdex num)
+        StringCopy(gStringVar1, gSpeciesNames[gCustomStarterStructPtr->speciesId]);            // Loads the first mon being the Bulbuous Saur
+        StringCopyPadded(gStringVar1, gStringVar1, CHAR_SPACE, 15);                         // Pads the species name with space
+        StringExpandPlaceholders(gStringVar4, sCustomStarterText_ID);
+        AddTextPrinterParameterized(gCustomStarterStructPtr->windowId, FONT_NORMAL, gStringVar4, 1, 1, 0, NULL);   // Prints all the text we prepared
+
+        // Load Animated Icon Sprite
+        FreeMonIconPalettes();                                                              //Free space for new pallete
+        LoadMonIconPalette(gCustomStarterStructPtr->speciesId);                                //Loads pallete for current mon
+        gCustomStarterStructPtr->monSpriteIconId = CreateMonIcon(gCustomStarterStructPtr->speciesId, SpriteCB_MonIcon, 150, 70, 4, 0, 0); //Create pokemon sprite
+        gSprites[gCustomStarterStructPtr->monSpriteIconId].oam.priority = 0;                   // Render it on the top layer
+
+        // Move on to next task
+        gTasks[taskId].func = Task_HandleCustomStarterChoiceMenuInput;
+    }
 }
 
 #undef tSpriteTimer

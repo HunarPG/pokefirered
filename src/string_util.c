@@ -720,3 +720,59 @@ void StripExtCtrlCodes(u8 *str)
     }
     str[destIndex] = 0xFF;
 }
+
+u8 *ConvertUIntToDecimalStringN(u8 *dest, u32 value, enum StringConvertMode mode, u8 n)
+{
+    enum { WAITING_FOR_NONZERO_DIGIT, WRITING_DIGITS, WRITING_SPACES } state;
+    s32 powerOfTen;
+    s32 largestPowerOfTen = sPowersOfTen[n - 1];
+
+    state = WAITING_FOR_NONZERO_DIGIT;
+
+    if (mode == STR_CONV_MODE_RIGHT_ALIGN)
+        state = WRITING_SPACES;
+
+    if (mode == STR_CONV_MODE_LEADING_ZEROS)
+        state = WRITING_DIGITS;
+
+    for (powerOfTen = largestPowerOfTen; powerOfTen > 0; powerOfTen /= 10)
+    {
+        u8 c;
+        u16 digit = value / powerOfTen;
+        u32 temp = value - (powerOfTen * digit);
+
+        if (state == WRITING_DIGITS)
+        {
+            u8 *out = dest++;
+
+            if (digit <= 9)
+                c = sDigits[digit];
+            else
+                c = CHAR_QUESTION_MARK;
+
+            *out = c;
+        }
+        else if (digit != 0 || powerOfTen == 1)
+        {
+            u8 *out;
+            state = WRITING_DIGITS;
+            out = dest++;
+
+            if (digit <= 9)
+                c = sDigits[digit];
+            else
+                c = CHAR_QUESTION_MARK;
+
+            *out = c;
+        }
+        else if (state == WRITING_SPACES)
+        {
+            *dest++ = CHAR_SPACER;
+        }
+
+        value = temp;
+    }
+
+    *dest = EOS;
+    return dest;
+}

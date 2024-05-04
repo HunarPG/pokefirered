@@ -1524,9 +1524,21 @@ static const u16 sStarterSpecies[] = {
 
 static u16 GetStarterSpeciesById(u16 idx)
 {
+    u16 StarterNatDexNum = VarGet(VAR_CUSTOM_STARTER);
+
+    while (StarterNatDexNum > (NUM_SPECIES - 1)) // Just smh dumb I put to prevent going out of bounds
+    {
+        StarterNatDexNum = StarterNatDexNum % (NUM_SPECIES - 1);
+    }
     if (idx >= NELEMS(sStarterSpecies))
         idx = 0;
-    return sStarterSpecies[idx];
+    switch (StarterNatDexNum)
+    {
+    case 0:
+        return sStarterSpecies[idx];
+    default:
+        return StarterNatDexNum; //sStarterMonBuffer; // This is really all thats needed
+    } 
 }
 
 u16 GetStarterSpecies(void)
