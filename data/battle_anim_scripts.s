@@ -11097,3 +11097,59 @@ Special_SubstituteToMon:
 Special_MonToSubstitute:
 	createvisualtask AnimTask_SwapMonSpriteToFromSubstitute, 2, FALSE
 	end
+
+Move_WEATHER_BALL_WATER:
+	loadspritegfx ANIM_TAG_WEATHER_BALL
+	createsprite gVerticalDipSpriteTemplate, ANIM_ATTACKER, 2, 8, 1, ANIM_ATTACKER
+	delay 8
+	playsewithpan SE_M_SWAGGER, SOUND_PAN_ATTACKER
+	createsprite gWeatherBallUpSpriteTemplate, ANIM_ATTACKER, 2
+	waitforvisualfinish
+	delay 15
+	playsewithpan SE_M_DETECT, 0
+	createsprite gComplexPaletteBlendSpriteTemplate, ANIM_ATTACKER, 2, F_PAL_BG | F_PAL_BATTLERS, 5, 1, RGB_WHITE, 10, RGB_BLACK, 0
+	waitforvisualfinish
+	createvisualtask AnimTask_GetWeather, 2
+	delay 1
+	loadspritegfx ANIM_TAG_SMALL_EMBER
+	createsprite gWeatherBallFireDownSpriteTemplate, ANIM_TARGET, 2, -30, -100, 25, 1, 40, 10
+	playsewithpan SE_M_FLAME_WHEEL, SOUND_PAN_TARGET
+	delay 10
+	createsprite gWeatherBallFireDownSpriteTemplate, ANIM_TARGET, 2, -30, -100, 25, 1, -40, 20
+	playsewithpan SE_M_FLAME_WHEEL, SOUND_PAN_TARGET
+	delay 10
+	createsprite gWeatherBallFireDownSpriteTemplate, ANIM_TARGET, 2, -30, -100, 25, 1, 0, 0
+	playsewithpan SE_M_FLAME_WHEEL, SOUND_PAN_TARGET
+	waitforvisualfinish
+	playsewithpan SE_M_FLAME_WHEEL2, SOUND_PAN_TARGET
+	createvisualtask AnimTask_ShakeMon, 2, ANIM_TARGET, 0, 3, 8, 1
+	waitforvisualfinish
+	end
+
+Move_WEATHER_BALL_FIRE:
+	loadspritegfx ANIM_TAG_WEATHER_BALL
+	createsprite gVerticalDipSpriteTemplate, ANIM_ATTACKER, 2, 8, 1, ANIM_ATTACKER
+	delay 8
+	playsewithpan SE_M_SWAGGER, SOUND_PAN_ATTACKER
+	createsprite gWeatherBallUpSpriteTemplate, ANIM_ATTACKER, 2
+	waitforvisualfinish
+	delay 15
+	playsewithpan SE_M_DETECT, 0
+	createsprite gComplexPaletteBlendSpriteTemplate, ANIM_ATTACKER, 2, F_PAL_BG | F_PAL_BATTLERS, 5, 1, RGB_WHITE, 10, RGB_BLACK, 0
+	waitforvisualfinish
+	createvisualtask AnimTask_GetWeather, 2
+	delay 1
+	loadspritegfx ANIM_TAG_SMALL_BUBBLES
+	createsprite gWeatherBallWaterDownSpriteTemplate, ANIM_TARGET, 2, -30, -100, 25, 1, 50, 10
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	delay 8
+	createsprite gWeatherBallWaterDownSpriteTemplate, ANIM_TARGET, 2, -30, -100, 25, 1, -20, 20
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	delay 13
+	createsprite gWeatherBallWaterDownSpriteTemplate, ANIM_TARGET, 2, -30, -100, 25, 1, 0, 0
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	waitforvisualfinish
+	createvisualtask AnimTask_ShakeMon, 2, ANIM_TARGET, 0, 3, 8, 1
+	playsewithpan SE_M_GIGA_DRAIN, SOUND_PAN_TARGET
+	waitforvisualfinish
+	end
