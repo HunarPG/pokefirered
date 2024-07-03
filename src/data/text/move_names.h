@@ -378,5 +378,7 @@ const u8 gMoveNames[MOVES_COUNT][MOVE_NAME_LENGTH + 1] = {
     [MOVE_HEAD_SMASH]             = _("HEAD SMASH"),
     [MOVE_GUNK_SHOT]              = _("GUNK SHOT"),
     [MOVE_WILD_CHARGE]            = _("WILD CHARGE"),
-    [MOVE_X_SCISSORS]             = _("X-SCISSORS")
+    [MOVE_X_SCISSORS]             = _("X-SCISSORS"),
+    [MOVE_DRACO_METEOR]           = _("DRACO METEOR"),
+    [MOVE_FORCE_PALM]             = _("FORCE PALM");
 };

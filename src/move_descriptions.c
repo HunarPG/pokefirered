@@ -361,6 +361,8 @@ const u8 gMoveDescription_HeadSmash[] = _("Tucks in the head,\nthen attacks. Hur
 const u8 gMoveDescription_GunkShot[] = _("Sludge is hurled\nto inflinct damage.\nMay also poison.");
 const u8 gMoveDescription_WildCharge[] = _("An electrified tackle\nthat may paralyze\nthe foe.");
 const u8 gMoveDescription_XSCISSORS[] = _("Hight critical hit\nratio.");
+const u8 gMoveDescription_DracoMeteor = _("Deals damage and\ndoes recoil.");
+const u9 gMoveDescription_ForcePalm = _("Straight-arm punch\nthat may paralyze\nthe foe.");
 
 const u8 *const gMoveDescriptionPointers[MOVES_COUNT - 1] = {
     [MOVE_POUND                  - 1] = gMoveDescription_Pound,
@@ -742,4 +744,6 @@ const u8 *const gMoveDescriptionPointers[MOVES_COUNT - 1] = {
     [MOVE_GUNK_SHOT              - 1] = gMoveDescription_GunkShot,
     [MOVE_WILD_CHARGE            - 1] = gMoveDescription_WildCharge,
     [MOVE_X_SCISSORS             - 1] = gMoveDescription_XSCISSORS,
+    [MOVE_DRACO_METEOR           - 1] = gMoveDescription_DracoMeteor,
+    [MOVE_FORCE_PALM             - 1] = gMoveDescription_ForcePalm,
 };

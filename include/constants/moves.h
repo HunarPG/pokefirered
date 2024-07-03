@@ -381,8 +381,10 @@
 #define MOVE_GUNK_SHOT 377
 #define MOVE_WILD_CHARGE 378
 #define MOVE_X_SCISSORS 379
+#define MOVE_DRACO_METEOR 380
+#define MOVE_FORCE_PALM 381
 
-#define MOVES_COUNT 380
+#define MOVES_COUNT 382
 
 // Used for checks for moves affected by Disable, Mimic, etc.
 #define MOVE_UNAVAILABLE 0xFFFF
