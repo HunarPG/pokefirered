@@ -398,6 +398,8 @@ gBattleAnims_Moves::
 	.4byte Move_EARTH_POWER
 	.4byte Move_HEAD_SMASH
 	.4byte Move_GUNK_SHOT
+	.4byte Move_WILD_CHARGE
+	.4byte Move_X_SCISSORS
 	.4byte Move_COUNT @ cannot be reached, because last move is Psycho Boost
 
 	.align 2
@@ -11243,3 +11245,9 @@ Move_HEAD_SMASH:
 
 Move_GUNK_SHOT:
 	goto Move_SLUDGE_BOMB
+
+Move_WILD_CHARGE:
+	goto Move_SPARK
+
+Move_X_SCISSORS:
+	goto Move_FURY_CUTTER

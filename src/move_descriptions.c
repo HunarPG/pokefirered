@@ -359,6 +359,8 @@ const u8 gMoveDescription_DrillRun[] = _("Drill run deals\ndamage, High critical
 const u8 gMoveDescription_EarthPower[] = _("Lower the foe's\ndefense.");
 const u8 gMoveDescription_HeadSmash[] = _("Tucks in the head,\nthen attacks. Hurts\nthe user.");
 const u8 gMoveDescription_GunkShot[] = _("Sludge is hurled\nto inflinct damage.\nMay also poison.");
+const u8 gMoveDescription_WildCharge[] = _("An electrified tackle\nthat may paralyze\nthe foe.");
+const u8 gMoveDescription_XSCISSORS[] = _("Hight critical hit\nratio.");
 
 const u8 *const gMoveDescriptionPointers[MOVES_COUNT - 1] = {
     [MOVE_POUND                  - 1] = gMoveDescription_Pound,
@@ -738,4 +740,6 @@ const u8 *const gMoveDescriptionPointers[MOVES_COUNT - 1] = {
     [MOVE_EARTH_POWER            - 1] = gMoveDescription_EarthPower,
     [MOVE_HEAD_SMASH             - 1] = gMoveDescription_HeadSmash,
     [MOVE_GUNK_SHOT              - 1] = gMoveDescription_GunkShot,
+    [MOVE_WILD_CHARGE            - 1] = gMoveDescription_WildCharge,
+    [MOVE_X_SCISSORS             - 1] = gMoveDescription_XSCISSORS,
 };

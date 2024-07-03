@@ -379,8 +379,10 @@
 #define MOVE_EARTH_POWER 375
 #define MOVE_HEAD_SMASH 376
 #define MOVE_GUNK_SHOT 377
+#define MOVE_WILD_CHARGE 378
+#define MOVE_X_SCISSORS 379
 
-#define MOVES_COUNT 378
+#define MOVES_COUNT 380
 
 // Used for checks for moves affected by Disable, Mimic, etc.
 #define MOVE_UNAVAILABLE 0xFFFF
