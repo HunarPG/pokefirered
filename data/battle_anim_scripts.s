@@ -395,6 +395,9 @@ gBattleAnims_Moves::
 	.4byte Move_HIDDEN_POWER_DRAGON
 	.4byte Move_HIDDEN_POWER_DARK
 	.4byte Move_HIDDEN_POWER_STEEL
+	.4byte Move_EARTH_POWER
+	.4byte Move_HEAD_SMASH
+	.4byte Move_GUNK_SHOT
 	.4byte Move_COUNT @ cannot be reached, because last move is Psycho Boost
 
 	.align 2
@@ -11231,3 +11234,12 @@ Move_HIDDEN_POWER_DARK:
 
 Move_HIDDEN_POWER_STEEL:
 	goto Move_HIDDEN_POWER
+
+Move_EARTH_POWER:
+	goto Move_FISSURE
+
+Move_HEAD_SMASH:
+	goto SkullBashAttack
+
+Move_GUNK_SHOT:
+	goto Move_SLUDGE_BOMB

@@ -373,5 +373,8 @@ const u8 gMoveNames[MOVES_COUNT][MOVE_NAME_LENGTH + 1] = {
     [MOVE_HIDDEN_POWER_GHOST]     = _("HIDDEN POWER"),
     [MOVE_HIDDEN_POWER_DRAGON]    = _("HIDDEN POWER"),
     [MOVE_HIDDEN_POWER_DARK]      = _("HIDDEN POWER"),
-    [MOVE_HIDDEN_POWER_STEEL]     = _("HIDDEN POWER")
+    [MOVE_HIDDEN_POWER_STEEL]     = _("HIDDEN POWER"),
+    [MOVE_EARTH_POWER]            = _("EARTH POWER"),
+    [MOVE_HEAD_SMASH]             = _("HEAD SMASH"),
+    [MOVE_GUNK_SHOT]              = _("GUNK SHOT")
 };

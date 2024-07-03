@@ -376,8 +376,11 @@
 #define MOVE_HIDDEN_POWER_DRAGON 372
 #define MOVE_HIDDEN_POWER_DARK 373
 #define MOVE_HIDDEN_POWER_STEEL 374
+#define MOVE_EARTH_POWER 375
+#define MOVE_HEAD_SMASH 376
+#define MOVE_GUNK_SHOT 377
 
-#define MOVES_COUNT 375
+#define MOVES_COUNT 378
 
 // Used for checks for moves affected by Disable, Mimic, etc.
 #define MOVE_UNAVAILABLE 0xFFFF

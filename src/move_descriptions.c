@@ -356,6 +356,9 @@ const u8 gMoveDescription_WaterPulse[] = _("An attack with a\npulsing blast of\n
 const u8 gMoveDescription_DoomDesire[] = _("A move that attacks\nthe foe with a\nblast of light two\nturns after use.");
 const u8 gMoveDescription_PsychoBoost[] = _("An intense attack\nthat also sharply\nreduces the user's\nSP. ATK stat.");
 const u8 gMoveDescription_DrillRun[] = _("Drill run deals\ndamage, High critical-hit\nratio.");
+const u8 gMoveDescription_EarthPower[] = _("Lower the foe's\ndefense.");
+const u8 gMoveDescription_HeadSmash[] = _("Tucks in the head,\nthen attacks. Hurts\nthe user.");
+const u8 gMoveDescription_GunkShot[] = _("Sludge is hurled\nto inflinct damage.\nMay also poison.");
 
 const u8 *const gMoveDescriptionPointers[MOVES_COUNT - 1] = {
     [MOVE_POUND                  - 1] = gMoveDescription_Pound,
@@ -732,4 +735,7 @@ const u8 *const gMoveDescriptionPointers[MOVES_COUNT - 1] = {
     [MOVE_HIDDEN_POWER_DRAGON    - 1] = gMoveDescription_HiddenPower,
     [MOVE_HIDDEN_POWER_DARK      - 1] = gMoveDescription_HiddenPower,
     [MOVE_HIDDEN_POWER_STEEL     - 1] = gMoveDescription_HiddenPower,
+    [MOVE_EARTH_POWER            - 1] = gMoveDescription_EarthPower,
+    [MOVE_HEAD_SMASH             - 1] = gMoveDescription_HeadSmash,
+    [MOVE_GUNK_SHOT              - 1] = gMoveDescription_GunkShot,
 };
