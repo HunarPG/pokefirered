@@ -358,8 +358,9 @@
 #define MOVE_PSYCHO_BOOST 354
 #define MOVE_WEATHER_BALL_WATER 355
 #define MOVE_WEATHER_BALL_FIRE 356
+#define MOVE_DRILL_RUN 357
 
-#define MOVES_COUNT 357
+#define MOVES_COUNT 358
 
 // Used for checks for moves affected by Disable, Mimic, etc.
 #define MOVE_UNAVAILABLE 0xFFFF

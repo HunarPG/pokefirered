@@ -11153,3 +11153,10 @@ Move_WEATHER_BALL_FIRE:
 	playsewithpan SE_M_GIGA_DRAIN, SOUND_PAN_TARGET
 	waitforvisualfinish
 	end
+
+Move_DRILL_RUN:
+	loadspritegfx ANIM_TAG_IMPACT
+	loadspritegfx ANIM_TAG_HORN_HIT
+	fadetobg BG_DRILL
+	waitbgfadeout
+	createvisualtask AnimTask_StartSlidingBg, 5, -2304, 768, 1, -1
