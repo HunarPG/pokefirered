@@ -383,8 +383,12 @@
 #define MOVE_X_SCISSORS 379
 #define MOVE_DRACO_METEOR 380
 #define MOVE_FORCE_PALM 381
+#define MOVE_SHADOW_SNEAK 382
+#define MOVE_AIR_SLASH 383
+#define MOVE_FLASH_CANNON 384
+#define MOVE_ICE_SHARD 385
 
-#define MOVES_COUNT 382
+#define MOVES_COUNT 386
 
 // Used for checks for moves affected by Disable, Mimic, etc.
 #define MOVE_UNAVAILABLE 0xFFFF

@@ -380,5 +380,9 @@ const u8 gMoveNames[MOVES_COUNT][MOVE_NAME_LENGTH + 1] = {
     [MOVE_WILD_CHARGE]            = _("WILD CHARGE"),
     [MOVE_X_SCISSORS]             = _("X-SCISSORS"),
     [MOVE_DRACO_METEOR]           = _("DRACO METEOR"),
-    [MOVE_FORCE_PALM]             = _("FORCE PALM");
+    [MOVE_SHADOW_SNEAK]           = _("SHADOW SNEAK"),
+    [MOVE_FORCE_PALM]             = _("FORCE PALM"),
+    [MOVE_AIR_SLASH]              = _("AIR SLASH"),
+    [MOVE_FLASH_CANNON]           = _("FLASH CANNON"),
+    [MOVE_ICE_SHARD]              = _("ICE SHARD")
 };

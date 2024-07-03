@@ -361,8 +361,12 @@ const u8 gMoveDescription_HeadSmash[] = _("Tucks in the head,\nthen attacks. Hur
 const u8 gMoveDescription_GunkShot[] = _("Sludge is hurled\nto inflinct damage.\nMay also poison.");
 const u8 gMoveDescription_WildCharge[] = _("An electrified tackle\nthat may paralyze\nthe foe.");
 const u8 gMoveDescription_XSCISSORS[] = _("Hight critical hit\nratio.");
-const u8 gMoveDescription_DracoMeteor = _("Deals damage and\ndoes recoil.");
-const u9 gMoveDescription_ForcePalm = _("Straight-arm punch\nthat may paralyze\nthe foe.");
+const u8 gMoveDescription_DracoMeteor[] = _("Deals damage and\ndoes recoil.");
+const u8 gMoveDescription_ForcePalm[] = _("Straight-arm punch\nthat may paralyze\nthe foe.");
+const u8 gMoveDescription_ShadowSneak[] = _("A fast attack\nthat always strikes\nfirst.");
+const u8 gMoveDescription_AirSlash[] = _("Hacks with wind.\nMay cause Flinching");
+const u8 gMoveDescription_FlashCannon[] = _("May Lower Foe's\nDEF.");
+const u8 gMoveDescription_IceShard[] = _("A fast attack\nthat always strikes\nfirst.");
 
 const u8 *const gMoveDescriptionPointers[MOVES_COUNT - 1] = {
     [MOVE_POUND                  - 1] = gMoveDescription_Pound,
@@ -746,4 +750,8 @@ const u8 *const gMoveDescriptionPointers[MOVES_COUNT - 1] = {
     [MOVE_X_SCISSORS             - 1] = gMoveDescription_XSCISSORS,
     [MOVE_DRACO_METEOR           - 1] = gMoveDescription_DracoMeteor,
     [MOVE_FORCE_PALM             - 1] = gMoveDescription_ForcePalm,
+    [MOVE_SHADOW_SNEAK           - 1] = gMoveDescription_ShadowSneak,
+    [MOVE_AIR_SLASH              - 1] = gMoveDescription_AirSlash,
+    [MOVE_FLASH_CANNON           - 1] = gMoveDescription_FlashCannon,
+    [MOVE_ICE_SHARD              - 1] = gMoveDescription_IceShard,
 };
