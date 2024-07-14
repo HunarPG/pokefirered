@@ -36,12 +36,14 @@
 #include "help_system.h"
 #include "constants/songs.h"
 #include "constants/field_weather.h"
+#include "pokemon_storage_system_internal.h"
 
 enum StartMenuOption
 {
     STARTMENU_POKEDEX = 0,
     STARTMENU_POKEMON,
     STARTMENU_BAG,
+    STARTMENU_PC,
     STARTMENU_PLAYER,
     STARTMENU_SAVE,
     STARTMENU_OPTION,
@@ -81,6 +83,7 @@ static bool8 StartMenuPokedexSanityCheck(void);
 static bool8 StartMenuPokedexCallback(void);
 static bool8 StartMenuPokemonCallback(void);
 static bool8 StartMenuBagCallback(void);
+static bool8 StartMenuPCCallback(void);
 static bool8 StartMenuPlayerCallback(void);
 static bool8 StartMenuSaveCallback(void);
 static bool8 StartMenuOptionCallback(void);
@@ -116,6 +119,7 @@ static const struct MenuAction sStartMenuActionTable[] = {
     { gText_MenuPokedex, {.u8_void = StartMenuPokedexCallback} },
     { gText_MenuPokemon, {.u8_void = StartMenuPokemonCallback} },
     { gText_MenuBag, {.u8_void = StartMenuBagCallback} },
+    { gText_MenuPC, {.u8_void = StartMenuPCCallback} },
     { gText_MenuPlayer, {.u8_void = StartMenuPlayerCallback} },
     { gText_MenuSave, {.u8_void = StartMenuSaveCallback} },
     { gText_MenuOption, {.u8_void = StartMenuOptionCallback} },
@@ -216,6 +220,8 @@ static void SetUpStartMenu_NormalField(void)
     if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
         AppendToStartMenuItems(STARTMENU_POKEMON);
     AppendToStartMenuItems(STARTMENU_BAG);
+    if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
+        AppendToStartMenuItems(STARTMENU_PC);
     AppendToStartMenuItems(STARTMENU_PLAYER);
     AppendToStartMenuItems(STARTMENU_SAVE);
     AppendToStartMenuItems(STARTMENU_OPTION);
@@ -498,6 +504,20 @@ static bool8 StartMenuBagCallback(void)
         SetMainCallback2(CB2_BagMenuFromStartMenu);
         return TRUE;
     }
+    return FALSE;
+}
+
+static bool8 StartMenuPCCallback(void)
+{
+	u8 taskId;
+    if (!gPaletteFade.active)
+    {
+        PlayRainStoppingSoundEffect();
+        DestroySafariZoneStatsWindow();
+		EnterPokeStorage(2);
+        return TRUE;
+    }
+
     return FALSE;
 }
 
