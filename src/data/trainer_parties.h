@@ -5606,7 +5606,7 @@ static const struct TrainerMonItemCustomMoves sParty_LeaderBrock[] = {
         .iv = 255,
         .lvl = 16,
         .species = SPECIES_NIDORINO,
-        .moves = {MOVE_SLUDGE_BOMB, MOVE_SHOCK_WAVE, MOVE_WATER_PULSE, MOVE_DOUBLE_KICK},
+        .moves = {MOVE_SLUDGE, MOVE_SHOCK_WAVE, MOVE_WATER_PULSE, MOVE_DOUBLE_KICK},
     },
     {
         .iv = 255,
