@@ -51,11 +51,11 @@
 
 #define ABSPATH(x) (CODE_ROOT x)
 
-#ifdef ENGLISH
-#define UNITS_IMPERIAL
-#else
+//#ifdef ENGLISH
+//#define UNITS_IMPERIAL
+//#else
 #define UNITS_METRIC
-#endif // ENGLISH
+//#endif // ENGLISH
 
 // Crashes may occur due to section reordering in the modern build,
 // so we force BUGFIX here.

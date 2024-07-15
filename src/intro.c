@@ -883,9 +883,7 @@ static const struct SpritePalette sFightSceneSpritePalettes[] = {
 	{sScene3_Grass_Pal,      PALTAG_SCENE3_GRASS},
 	{sScene3_Swipe_Pal,      PALTAG_SCENE3_SWIPE},
 	{sScene3_RecoilDust_Pal, PALTAG_SCENE3_RECOIL_DUST},
-#ifdef BUGFIX
     {0}
-#endif
 };
 
 static void VBlankCB_Copyright(void)

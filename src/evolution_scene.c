@@ -1195,9 +1195,9 @@ static void Task_TradeEvolutionScene(u8 taskId)
          * BUG: This check causes the evolved Pokemon's cry to play over the sfx.
          * Negate the below condition.
          */
-        if (IsSEPlaying())
+        if (!IsSEPlaying())
         {
-//            Free(sBgAnimPal);
+            Free(sBgAnimPal);
             PlayCry_Normal(gTasks[taskId].tPostEvoSpecies, 0);
             memcpy(&gPlttBufferUnfaded[BG_PLTT_ID(2)], sEvoStructPtr->savedPalette, sizeof(sEvoStructPtr->savedPalette));
             gTasks[taskId].tState++;

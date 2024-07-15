@@ -3642,11 +3642,7 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         break;
     case MON_DATA_IVS:
     {
-#ifdef BUGFIX
         u32 ivs = data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
-#else
-        u32 ivs = *data; // Bug: Only the HP IV and the lower 3 bits of the Attack IV are read. The rest become 0.
-#endif
         substruct3->hpIV = ivs & MAX_IV_MASK;
         substruct3->attackIV = (ivs >> 5) & MAX_IV_MASK;
         substruct3->defenseIV = (ivs >> 10) & MAX_IV_MASK;

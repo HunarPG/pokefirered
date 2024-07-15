@@ -2027,7 +2027,7 @@ static bool8 ShouldRegisterEvent_DepartedGameCorner(u16 eventId, const u16 * gen
 
     data = (struct QuestLogEvent_Departed *)genericData;
 
-    if (data->locationId == QL_LOCATION_GAME_CORNER && !sPlayedTheSlots)
+    if (data->locationId == (QL_LOCATION_GAME_CORNER + 1) && !sPlayedTheSlots)
         return FALSE;
 
     sPlayedTheSlots = FALSE;

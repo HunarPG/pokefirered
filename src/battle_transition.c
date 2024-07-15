@@ -2492,7 +2492,7 @@ static void VBlankCB_WhiteBarsFade(void)
     SetGpuReg(REG_OFFSET_BLDCNT, sTransitionData->bldCnt);
     SetGpuReg(REG_OFFSET_WININ, sTransitionData->winIn);
     SetGpuReg(REG_OFFSET_WINOUT, sTransitionData->winOut);
-    SetGpuReg(REG_OFFSET_WIN0V, sTransitionData->win0H); // BUG: This should obviously be sTransitionData->win0V
+    SetGpuReg(REG_OFFSET_WIN0V, sTransitionData->win0V);
     if (sTransitionData->vblankDma)
         DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DISPLAY_HEIGHT * 4);
     DmaSet(0, &gScanlineEffectRegBuffers[1][DISPLAY_HEIGHT], &REG_WIN0H, B_TRANS_DMA_FLAGS);
