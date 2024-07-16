@@ -452,4 +452,5 @@ gSpecials::
 	def_special UpdateLoreleiDollCollection
 	def_special LoopWingFlapSound
 	def_special CreateEnemyEventMon
+	def_special CB2_ShowEvIv_PlayerParty
 gSpecialsEnd::

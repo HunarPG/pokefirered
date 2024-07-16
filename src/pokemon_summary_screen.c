@@ -34,6 +34,7 @@
 #include "mon_markings.h"
 #include "pokemon_storage_system.h"
 #include "constants/sound.h"
+#include "ev_iv_display_screen.h"
 
 // needs conflicting header to match (curIndex is s8 in the function, but has to be defined as u8 here)
 extern s16 SeekToNextMonInBox(struct BoxPokemon * boxMons, u8 curIndex, u8 maxIndex, u8 flags);
@@ -916,7 +917,7 @@ static const u8 sLevelNickTextColors[][3] =
     {0, 11, 10},
 };
 
-static const u8 ALIGNED(4) sMultiBattlePartyOrder[] =
+const u8 ALIGNED(4) gMultiBattlePartyOrder[] =
 {
     0, 2, 3, 1, 4, 5
 };
@@ -1182,6 +1183,12 @@ static void Task_InputHandler_Info(u8 taskId)
                     PlaySE(SE_SELECT);
                     sMonSummaryScreen->state3270 = PSS_STATE3270_ATEXIT_FADEOUT;
                 }
+                else if (sMonSummaryScreen->curPageIndex == PSS_PAGE_SKILLS && FlagGet(FLAG_EV_IV))
+                {
+                    sMonSummaryScreen->state3270 = PSS_STATE3270_EV_IV;
+                    BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+                    PlaySE(SE_CARD_OPEN);   
+                }
                 else if (sMonSummaryScreen->curPageIndex == PSS_PAGE_MOVES)
                 {
                     PlaySE(SE_SELECT);
@@ -1221,6 +1228,15 @@ static void Task_InputHandler_Info(u8 taskId)
             return;
 
         sMonSummaryScreen->state3270 = PSS_STATE3270_ATEXIT_WAITFADE;
+        break;
+    case PSS_STATE3270_EV_IV:
+        if (!gPaletteFade.active)
+        {
+            SetMainCallback2(CB2_ShowEvIv_SummaryScreen);
+            PokeSum_DestroySprites();
+            FreeAllWindowBuffers();
+            DestroyTask(taskId);
+        }
         break;
     default:
         if (!gPaletteFade.active)
@@ -2503,7 +2519,7 @@ static const u8 sNatureTextColors[][3] =
     {0, 7, 10}, //Change to 0, 6, 7 for an alternative 
 };
 
-extern const s8 sNatureStatTable[][5];
+extern const s8 gNatureStatTable[][5];
 
 u8 GetNatureTextColor(s8 natureMod)
 {
@@ -2517,7 +2533,7 @@ u8 GetNatureTextColor(s8 natureMod)
 
 static void PrintSkillsPage(void)
 {
-    const s8 *natureMod = sNatureStatTable[GetNature(&sMonSummaryScreen->currentMon)];
+    const s8 *natureMod = gNatureStatTable[GetNature(&sMonSummaryScreen->currentMon)];
     AddTextPrinterParameterized3(sMonSummaryScreen->windowIds[POKESUM_WIN_RIGHT_PANE], FONT_NORMAL, 14 + sMonSkillsPrinterXpos->curHpStr, 4, sLevelNickTextColors[0], TEXT_SKIP_DRAW, sMonSummaryScreen->summary.curHpStrBuf);
     AddTextPrinterParameterized3(sMonSummaryScreen->windowIds[POKESUM_WIN_RIGHT_PANE], 2, 50 + sMonSkillsPrinterXpos->atkStr, 22, sNatureTextColors[GetNatureTextColor(natureMod[STAT_ATK - 1])], TEXT_SKIP_DRAW, sMonSummaryScreen->summary.statValueStrBufs[PSS_STAT_ATK]);
     AddTextPrinterParameterized3(sMonSummaryScreen->windowIds[POKESUM_WIN_RIGHT_PANE], 2, 50 + sMonSkillsPrinterXpos->defStr, 35, sNatureTextColors[GetNatureTextColor(natureMod[STAT_DEF - 1])], TEXT_SKIP_DRAW, sMonSummaryScreen->summary.statValueStrBufs[PSS_STAT_DEF]);
@@ -2961,7 +2977,10 @@ static void PokeSum_PrintPageHeaderText(u8 curPageIndex)
         break;
     case PSS_PAGE_SKILLS:
         PokeSum_PrintPageName(gText_PokeSum_PageName_PokemonSkills);
-        PokeSum_PrintControlsString(gText_PokeSum_Controls_Page);
+        if (FlagGet(FLAG_EV_IV))
+            PokeSum_PrintControlsString(gText_PokeSum_Controls_Page_EvIv);
+        else
+            PokeSum_PrintControlsString(gText_PokeSum_Controls_Page);
         PrintMonLevelNickOnWindow2(gText_PokeSum_NoData);
         break;
     case PSS_PAGE_MOVES:
@@ -5021,11 +5040,11 @@ static s8 SeekToMonInMultiParty_SeekForward(u8 startingIdx)
 
         if (startingIdx == 6)
             return -1;
-        if (PokeSum_CanSeekToMon(&gPlayerParty[sMultiBattlePartyOrder[startingIdx]]) == TRUE)
+        if (PokeSum_CanSeekToMon(&gPlayerParty[gMultiBattlePartyOrder[startingIdx]]) == TRUE)
             break;
     }
 
-    return (s8)sMultiBattlePartyOrder[startingIdx];
+    return (s8)gMultiBattlePartyOrder[startingIdx];
 }
 
 static s8 SeekToMonInMultiParty_SeekBack(u8 startingIdx)
@@ -5037,11 +5056,11 @@ static s8 SeekToMonInMultiParty_SeekBack(u8 startingIdx)
 
         startingIdx--;
 
-        if (PokeSum_CanSeekToMon(&gPlayerParty[sMultiBattlePartyOrder[startingIdx]]) == TRUE)
+        if (PokeSum_CanSeekToMon(&gPlayerParty[gMultiBattlePartyOrder[startingIdx]]) == TRUE)
             break;
     }
 
-    return (s8)(sMultiBattlePartyOrder[startingIdx]);
+    return (s8)(gMultiBattlePartyOrder[startingIdx]);
 }
 
 static s8 SeekToNextMonInMultiParty(s8 direction)
@@ -5050,7 +5069,7 @@ static s8 SeekToNextMonInMultiParty(s8 direction)
     u8 i;
 
     for (i = 0; i < PARTY_SIZE; i++)
-        if (sMultiBattlePartyOrder[i] == GetLastViewedMonIndex())
+        if (gMultiBattlePartyOrder[i] == GetLastViewedMonIndex())
         {
             foundPartyIdx = i;
             break;
@@ -5241,4 +5260,44 @@ static bool32 MapSecIsInKantoOrSevii(u8 mapSec)
 static void ShowPokemonSummaryScreen_NullParty(void)
 {
     ShowPokemonSummaryScreen(NULL, 0, 0, CB2_ReturnToField, PSS_MODE_NORMAL);
+}
+
+void CB2_ShowEvIv_SummaryScreen(void)
+{
+    if (!gPaletteFade.active)
+        Show_EvIv(sMonSummaryScreen->monList.mons,
+                sLastViewedMonIndex,
+                sMonSummaryScreen->lastIndex,
+                sMonSummaryScreen->savedCallback,
+                sMonSummaryScreen->isBoxMon,
+                TRUE);
+}
+
+void EvIv_SummaryScreen_Callback(u8 cursorPos)
+{
+    sLastViewedMonIndex = cursorPos;
+
+    sMonSummaryScreen->curPageIndex = PSS_PAGE_INFO;
+
+    sMonSummaryScreen->state3270 = PSS_STATE3270_FADEIN;
+    sMonSummaryScreen->summarySetupStep = 0;
+    sMonSummaryScreen->loadBgGfxStep = 0;
+    sMonSummaryScreen->spriteCreationStep = 0;
+
+    sMonSummaryScreen->whichBgLayerToTranslate = 0;
+    sMonSummaryScreen->skillsPageBgNum = 2;
+    sMonSummaryScreen->infoAndMovesPageBgNum = 1;
+    sMonSummaryScreen->flippingPages = FALSE;
+
+    BufferSelectedMonData(&sMonSummaryScreen->currentMon);
+
+    sMonSummaryScreen->isEgg = GetMonData(&sMonSummaryScreen->currentMon, MON_DATA_IS_EGG);
+    sMonSummaryScreen->isBadEgg = GetMonData(&sMonSummaryScreen->currentMon, MON_DATA_SANITY_IS_BAD_EGG);
+
+    if (sMonSummaryScreen->isBadEgg == TRUE)
+        sMonSummaryScreen->isEgg = TRUE;
+
+    sMonSummaryScreen->lastPageFlipDirection = 0xff;
+
+    SetMainCallback2(CB2_SetUpPSS);
 }
