@@ -14,6 +14,7 @@
 #include "party_menu.h"
 #include "script.h"
 #include "trig.h"
+#include "constants/abilities.h"
 #include "constants/event_objects.h"
 #include "constants/songs.h"
 #include "constants/metatile_labels.h"
@@ -201,6 +202,10 @@ bool8 FldEff_CutGrass(void)
 {
     u8 i, j;
     s16 x, y;
+    u8 cutRange;
+    u8 userAbility;
+    u8 TileCountFromPlayer_X;
+    u8 TileCountFromPlayer_Y;
     u8 pos;
 
     i = 0;
@@ -208,12 +213,34 @@ bool8 FldEff_CutGrass(void)
     pos = gFieldEffectArguments[1] - 1;
     PlayerGetDestCoords(&gPlayerFacingPosition.x, &gPlayerFacingPosition.y);
 
+    userAbility = GetMonAbility(&gPlayerParty[GetCursorSelectionMonId()]);
+    if(userAbility == ABILITY_HYPER_CUTTER)
+    {
+        cutRange = 5;
+        TileCountFromPlayer_X = 2;
+        TileCountFromPlayer_Y = 2;
+    }
+    else
+    {
+        cutRange = 3;
+        TileCountFromPlayer_X = 1;
+        TileCountFromPlayer_Y = 1;
+    }
+
     for (i = 0; i < CUT_SIDE; i++)
     {
         y = gPlayerFacingPosition.y - 1 + i;
-        for (j = 0; j < CUT_SIDE; j++)
+        if(userAbility == ABILITY_HYPER_CUTTER)
+        {
+            y -= 1;
+        }
+        for (j = 0; j < cutRange; j++)
         {
             x = gPlayerFacingPosition.x - 1 + j;
+            if(userAbility == ABILITY_HYPER_CUTTER)
+            {
+                x -= 1;
+            }
             if (MapGridGetElevationAt(x, y) == gPlayerFacingPosition.elevation)
             {
                 if (MetatileAtCoordsIsGrassTile(x, y) == TRUE)

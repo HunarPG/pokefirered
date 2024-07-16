@@ -6019,6 +6019,14 @@ void SetWildMonHeldItem(void)
     {
         u16 rnd = Random() % 100;
         u16 species = GetMonData(&gEnemyParty[0], MON_DATA_SPECIES, NULL);
+        u16 var1 = 45;
+        u16 var2 = 95;
+        if (!GetMonData(&gPlayerParty[0], MON_DATA_IS_EGG, 0)
+            && GetMonAbility(&gPlayerParty[0]) == ABILITY_COMPOUND_EYES)
+        {
+            var1 = 20;
+            var2 = 80;
+        }
         if (gSpeciesInfo[species].itemCommon == gSpeciesInfo[species].itemRare)
         {
             // Both held items are the same, 100% chance to hold item   
@@ -6026,13 +6034,12 @@ void SetWildMonHeldItem(void)
             return;
         }
 
-        if (rnd > 44)
-        {
-            if (rnd <= 94)
-                SetMonData(&gEnemyParty[0], MON_DATA_HELD_ITEM, &gSpeciesInfo[species].itemCommon);
-            else
-                SetMonData(&gEnemyParty[0], MON_DATA_HELD_ITEM, &gSpeciesInfo[species].itemRare);
-        }
+        if (rnd < var1)
+            return;
+        if (rnd < var2)
+            SetMonData(&gEnemyParty[0], MON_DATA_HELD_ITEM, &gSpeciesInfo[species].itemCommon);
+        else
+            SetMonData(&gEnemyParty[0], MON_DATA_HELD_ITEM, &gSpeciesInfo[species].itemRare);
     }
 }
 
