@@ -896,6 +896,7 @@ const u8 gText_SaveFailed[] = _("レポ-トの かきこみに\nしっぱい し
 const u8 gText_NoSaveFileCantSetTime[] = _("レポ-トが ないので\nじかんの せっていは できません!");
 const u8 gText_InGameClockUsable[] = _("ゲ-ムない じかんの しゅうせい システムが\nつかえる ように なりました!");
 const u8 gText_SavingDontTurnOffThePower2[] = _("SAVING…\nDON'T TURN OFF THE POWER.");
+const u8 gText_TextSpeedInstant[] = _("INSTANT");
 
 // Start menu option descriptions
 const u8 gStartMenuDesc_Pokedex[] = _("A device that records POKéMON secrets\nupon meeting or catching them.");

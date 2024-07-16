@@ -10,6 +10,7 @@
 #include "strings.h"
 #include "field_fadetransition.h"
 #include "gba/m4a_internal.h"
+#include <strings.h>
 
 // can't include the one in menu_helpers.h since Task_OptionMenu needs bool32 for matching
 bool32 IsActiveOverworldLinkBusy(void);
@@ -131,7 +132,7 @@ static const struct BgTemplate sOptionMenuBgTemplates[] =
 };
 
 static const u16 sOptionMenuPalette[] = INCBIN_U16("graphics/misc/option_menu.gbapal");
-static const u16 sOptionMenuItemCounts[MENUITEM_COUNT] = {3, 2, 2, 2, 3, 10, 0};
+static const u16 sOptionMenuItemCounts[MENUITEM_COUNT] = {4, 2, 2, 2, 3, 10, 0};
 
 static const u8 *const sOptionMenuItemsNames[MENUITEM_COUNT] =
 {
@@ -148,7 +149,8 @@ static const u8 *const sTextSpeedOptions[] =
 {
     gText_TextSpeedSlow, 
     gText_TextSpeedMid, 
-    gText_TextSpeedFast
+    gText_TextSpeedFast,
+    gText_TextSpeedInstant
 };
 
 static const u8 *const sBattleSceneOptions[] =
