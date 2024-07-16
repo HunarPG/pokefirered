@@ -70,6 +70,7 @@ static s8 GetWarpEventAtMapPosition(struct MapHeader * mapHeader, struct MapPosi
 static bool8 TryDoorWarp(struct MapPosition * position, u16 metatileBehavior, u8 playerDirection);
 static s8 GetWarpEventAtPosition(struct MapHeader * mapHeader, u16 x, u16 y, u8 z);
 static const u8 *GetCoordEventScriptAtPosition(struct MapHeader * mapHeader, u16 x, u16 y, u8 z);
+static bool8 EnableAutoRun(void);
 
 struct FieldInput gFieldInputRecord;
 
@@ -294,6 +295,8 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
         gFieldInputRecord.pressedSelectButton = TRUE;
         return TRUE;
     }
+    if (input->pressedRButton && EnableAutoRun())
+        return TRUE;
 
     return FALSE;
 }
@@ -1179,4 +1182,31 @@ int SetCableClubWarp(void)
     MapGridGetMetatileBehaviorAt(position.x, position.y);  // unnecessary
     SetupWarp(&gMapHeader, GetWarpEventAtMapPosition(&gMapHeader, &position), &position);
     return 0;
+}
+
+extern const u8 EventScript_EnableAutoRun[];
+static bool8 EnableAutoRun(void)
+{
+    if (!FlagGet(FLAG_AUTO_RUN_TOGGLED))
+    {
+        FlagSet(FLAG_AUTO_RUN_TOGGLED);
+        if(FlagGet(FLAG_AUTO_RUN_EXPLAINED))
+        {
+            PlaySE(SE_SELECT);
+        }
+        else
+        {
+            FlagSet(FLAG_AUTO_RUN_EXPLAINED);
+            ScriptContext_SetupScript(EventScript_EnableAutoRun);
+        }
+        return FALSE;
+    }
+    else
+    {
+        FlagClear(FLAG_AUTO_RUN_TOGGLED);
+        PlaySE(SE_SELECT);
+        return FALSE;
+    }
+
+    return TRUE;
 }
