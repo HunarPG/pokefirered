@@ -222,11 +222,11 @@ static const u8 *const sTextColorByNature[] =
 const u8 gText_eviv_Slash[]      = _("/");
 const u8 gText_CensorEgg[]  = _("{CLEAR_TO 12}?{CLEAR_TO 42}?{CLEAR_TO 66}?");
 
-const u8 gText_BsEvIv[] = _("BS{CLEAR_TO 30}EV{CLEAR_TO 54}IV");
+const u8 gText_BsEvIv[] = _("BS{CLEAR_TO 51}IV");
 
 const u8 gText_eviv_Total[]  = _("TOTAL:");
 const u8 gText_Percent[] = _("% ");
-const u8 gText_eviv_Tittle[] = _("POKéMON EV-IV");
+const u8 gText_eviv_Tittle[] = _("POKéMON IV");
 
 #if EV_IV_TEXT == LANGUAGE_SPANISH
 const u8 gText_eviv_Buttons[] = _("{DPAD_UPDOWN}SEL. {A_BUTTON}{B_BUTTON}SALIR");
@@ -927,32 +927,26 @@ static void PrintStat(u8 nature, u8 stat)
     {
     case STAT_HP:
         AddTextPrinterParameterized3(WIN_STATS, 2, BS_X, HP_Y, sTextColorByNature[color_idx], 0, gStringVar1);
-        AddTextPrinterParameterized3(WIN_STATS, 2, EV_X, HP_Y, sTextColorByNature[color_idx], 0, gStringVar2);
         AddTextPrinterParameterized3(WIN_STATS, 2, IV_X, HP_Y, sTextColorByNature[color_idx], 0, gStringVar3);
         break;
     case STAT_ATK:
         AddTextPrinterParameterized3(WIN_STATS, 2, BS_X, ATK_Y, sTextColorByNature[color_idx], 0, gStringVar1);
-        AddTextPrinterParameterized3(WIN_STATS, 2, EV_X, ATK_Y, sTextColorByNature[color_idx], 0, gStringVar2);
         AddTextPrinterParameterized3(WIN_STATS, 2, IV_X, ATK_Y, sTextColorByNature[color_idx], 0, gStringVar3);
         break;
     case STAT_DEF:
         AddTextPrinterParameterized3(WIN_STATS, 2, BS_X, DEF_Y, sTextColorByNature[color_idx], 0, gStringVar1);
-        AddTextPrinterParameterized3(WIN_STATS, 2, EV_X, DEF_Y, sTextColorByNature[color_idx], 0, gStringVar2);
         AddTextPrinterParameterized3(WIN_STATS, 2, IV_X, DEF_Y, sTextColorByNature[color_idx], 0, gStringVar3);
         break;
     case STAT_SPATK:
         AddTextPrinterParameterized3(WIN_STATS, 2, BS_X, SPATK_Y, sTextColorByNature[color_idx], 0, gStringVar1);
-        AddTextPrinterParameterized3(WIN_STATS, 2, EV_X, SPATK_Y, sTextColorByNature[color_idx], 0, gStringVar2);
         AddTextPrinterParameterized3(WIN_STATS, 2, IV_X, SPATK_Y, sTextColorByNature[color_idx], 0, gStringVar3);
         break;
     case STAT_SPDEF:
         AddTextPrinterParameterized3(WIN_STATS, 2, BS_X, SPDEF_Y, sTextColorByNature[color_idx], 0, gStringVar1);
-        AddTextPrinterParameterized3(WIN_STATS, 2, EV_X, SPDEF_Y, sTextColorByNature[color_idx], 0, gStringVar2);
         AddTextPrinterParameterized3(WIN_STATS, 2, IV_X, SPDEF_Y, sTextColorByNature[color_idx], 0, gStringVar3);
         break;
     case STAT_SPEED:
         AddTextPrinterParameterized3(WIN_STATS, 2, BS_X, SPEED_Y, sTextColorByNature[color_idx], 0, gStringVar1);
-        AddTextPrinterParameterized3(WIN_STATS, 2, EV_X, SPEED_Y, sTextColorByNature[color_idx], 0, gStringVar2);
         AddTextPrinterParameterized3(WIN_STATS, 2, IV_X, SPEED_Y, sTextColorByNature[color_idx], 0, gStringVar3);
         break;
     default:
@@ -972,7 +966,6 @@ static void PrintWindow2(u16 species, u8 isEgg, u8 friendship)
         ConvertIntToDecimalStringN(gStringVar2, gEvIv->totalStatsEV, STR_CONV_MODE_RIGHT_ALIGN, 3);
         ConvertIntToDecimalStringN(gStringVar3, gEvIv->totalStatsIV, STR_CONV_MODE_RIGHT_ALIGN, 3);
         AddTextPrinterParameterized3(WIN_BOTTOM_BOX, 2, BS_X, 4, sBlackTextColor, 0, gStringVar1);
-        AddTextPrinterParameterized3(WIN_BOTTOM_BOX, 2, EV_X, 4, sBlackTextColor, 0, gStringVar2);
         AddTextPrinterParameterized3(WIN_BOTTOM_BOX, 2, IV_X -6, 4, sBlackTextColor, 0, gStringVar3);
 
         StringCopy(gStringVar4, gText_Friendship);
