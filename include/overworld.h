@@ -107,6 +107,7 @@ void CB2_EnterFieldFromQuestLog(void);
 void Overworld_PlaySpecialMapMusic(void);
 
 u8 GetCurrentRegionMapSectionId(void);
+u8 GetCurrentRegionMapSectionIdNuzlocke(void);
 
 void SetCurrentMapLayout(u16 mapLayoutId);
 void SetWarpDestinationToFixedHoleWarp(s16 x, s16 y);

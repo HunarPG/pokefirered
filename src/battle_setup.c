@@ -26,6 +26,8 @@
 #include "battle.h"
 #include "battle_transition.h"
 #include "battle_controllers.h"
+#include "pokedex.h"
+#include "pokemon.h"
 #include "constants/battle_setup.h"
 #include "constants/items.h"
 #include "constants/maps.h"
@@ -69,6 +71,7 @@ static bool32 IsPlayerDefeated(u32 battleOutcome);
 static void CB2_EndTrainerBattle(void);
 static const u8 *GetIntroSpeechOfApproachingTrainer(void);
 static const u8 *GetTrainerCantBattleSpeech(void);
+static bool8 IsCaptureBlockedBySpeciesClause(u16 species);
 
 static EWRAM_DATA u16 sTrainerBattleMode = 0;
 EWRAM_DATA u16 gTrainerBattleOpponent_A = 0;
@@ -80,6 +83,8 @@ static EWRAM_DATA u8 *sTrainerCannotBattleSpeech = NULL;
 static EWRAM_DATA u8 *sTrainerBattleEndScript = NULL;
 static EWRAM_DATA u8 *sTrainerABattleScriptRetAddr = NULL;
 static EWRAM_DATA u16 sRivalBattleFlags = 0;
+EWRAM_DATA bool8 gIsCaptureBlockedByNuzlocke = FALSE;
+EWRAM_DATA bool8 gIsSpeciesClauseActive = FALSE; 
 
 // The first transition is used if the enemy pokemon are lower level than our pokemon.
 // Otherwise, the second transition is used.
@@ -235,12 +240,32 @@ static bool8 CheckSilphScopeInPokemonTower(u16 mapGroup, u16 mapNum)
 
 void StartWildBattle(void)
 {
-    if (GetSafariZoneFlag())
-        DoSafariBattle();
-    else if (CheckSilphScopeInPokemonTower(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum))
+    if (CheckSilphScopeInPokemonTower(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum))
         DoGhostBattle();
     else
-        DoStandardWildBattle();
+    {
+        if (FlagGet(FLAG_NUZLOCKE_GLOBAL))
+        {
+            gIsSpeciesClauseActive = IsCaptureBlockedBySpeciesClause(GetMonData(&gEnemyParty[0], MON_DATA_SPECIES));
+            if (IsMonShiny(&gEnemyParty[0]))
+            {
+                gIsCaptureBlockedByNuzlocke = 0;
+                gIsSpeciesClauseActive = 0;
+            }
+            else if (!NuzlockeFlagGet(GetCurrentRegionMapSectionIdNuzlocke()))
+                gIsCaptureBlockedByNuzlocke = 0;
+            else
+                gIsCaptureBlockedByNuzlocke = 1;
+        }
+        else
+        {
+            gIsCaptureBlockedByNuzlocke = 0;
+        }
+        if (GetSafariZoneFlag())
+            DoSafariBattle();
+        else
+            DoStandardWildBattle();
+    }
 }
 
 static void DoStandardWildBattle(void)
@@ -1066,4 +1091,15 @@ const u8 *GetTrainerWonSpeech(void)
 static const u8 *GetTrainerCantBattleSpeech(void)
 {
     return ReturnEmptyStringIfNull(sTrainerCannotBattleSpeech);
+}
+
+static bool8 IsCaptureBlockedBySpeciesClause(u16 species)
+{
+    int i;
+    for (i = 0; i < EVOS_PER_LINE; i++)
+    {
+        if (GetSetPokedexFlag(SpeciesToNationalPokedexNum(gEvolutionLines[species][i]), FLAG_GET_CAUGHT))
+            return TRUE;
+    }
+    return FALSE;
 }

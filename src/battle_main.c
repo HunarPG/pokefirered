@@ -21,6 +21,7 @@
 #include "link_rfu.h"
 #include "load_save.h"
 #include "m4a.h"
+#include "overworld.h"
 #include "party_menu.h"
 #include "pokeball.h"
 #include "pokedex.h"
@@ -3224,6 +3225,18 @@ static void HandleTurnActionSelectionState(void)
                         *(gBattleStruct->stateIdAfterSelScript + gActiveBattler) = STATE_BEFORE_ACTION_CHOSEN;
                         return;
                     }
+                    else if (gIsCaptureBlockedByNuzlocke)
+                    {
+                        BattleScriptExecute(BattleScript_NuzlockeCantCatch);
+                        gBattleCommunication[gActiveBattler] = STATE_BEFORE_ACTION_CHOSEN;
+                        return;
+                    }
+                    else if (gIsSpeciesClauseActive)
+                    {
+                        BattleScriptExecute(BattleScript_SpeciesClause);
+                        gBattleCommunication[gActiveBattler] = STATE_BEFORE_ACTION_CHOSEN;
+                        return;
+                    }
                     break;
                 case B_ACTION_CANCEL_PARTNER:
                     gBattleCommunication[gActiveBattler] = STATE_WAIT_SET_BEFORE_ACTION;
@@ -3843,8 +3856,12 @@ static void HandleEndTurn_FinishBattle(void)
         TrySetQuestLogBattleEvent();
         if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
             ClearRematchStateByTrainerId();
+        if (!(gBattleTypeFlags & (BATTLE_TYPE_NOT_NUZLOCKE)) && FlagGet(FLAG_NUZLOCKE_GLOBAL) && !gIsSpeciesClauseActive && !NuzlockeFlagGet(GetCurrentRegionMapSectionIdNuzlocke()))
+                NuzlockeFlagSet(GetCurrentRegionMapSectionIdNuzlocke());
         BeginFastPaletteFade(3);
         FadeOutMapMusic(5);
+        if (FlagGet(FLAG_NUZLOCKE_GLOBAL))
+            DeleteFaintedPartyMons();
         gBattleMainFunc = FreeResetData_ReturnToOvOrDoEvolutions;
         gCB2_AfterEvolution = BattleMainCB2;
     }

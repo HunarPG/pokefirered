@@ -793,119 +793,122 @@
 #define FLAG_NO_ROOM_FOR_JOYFUL_GAME_CORNER_MOON_STONE   0x2FE
 #define FLAG_OAKS_RATING_IS_VIA_PC                       0x2FF
 
-// Unused?
-#define FLAG_0x300               0x300
-#define FLAG_0x301               0x301
-#define FLAG_0x302               0x302
-#define FLAG_0x303               0x303
-#define FLAG_0x304               0x304
-#define FLAG_0x305               0x305
-#define FLAG_0x306               0x306
-#define FLAG_0x307               0x307
-#define FLAG_0x308               0x308
-#define FLAG_0x309               0x309
-#define FLAG_0x30A               0x30A
-#define FLAG_0x30B               0x30B
-#define FLAG_0x30C               0x30C
-#define FLAG_0x30D               0x30D
-#define FLAG_0x30E               0x30E
-#define FLAG_0x30F               0x30F
-#define FLAG_0x310               0x310
-#define FLAG_0x311               0x311
-#define FLAG_0x312               0x312
-#define FLAG_0x313               0x313
-#define FLAG_0x314               0x314
-#define FLAG_0x315               0x315
-#define FLAG_0x316               0x316
-#define FLAG_0x317               0x317
-#define FLAG_0x318               0x318
-#define FLAG_0x319               0x319
-#define FLAG_0x31A               0x31A
-#define FLAG_0x31B               0x31B
-#define FLAG_0x31C               0x31C
-#define FLAG_0x31D               0x31D
-#define FLAG_0x31E               0x31E
-#define FLAG_0x31F               0x31F
-#define FLAG_0x320               0x320
-#define FLAG_0x321               0x321
-#define FLAG_0x322               0x322
-#define FLAG_0x323               0x323
-#define FLAG_0x324               0x324
-#define FLAG_0x325               0x325
-#define FLAG_0x326               0x326
-#define FLAG_0x327               0x327
-#define FLAG_0x328               0x328
-#define FLAG_0x329               0x329
-#define FLAG_0x32A               0x32A
-#define FLAG_0x32B               0x32B
-#define FLAG_0x32C               0x32C
-#define FLAG_0x32D               0x32D
-#define FLAG_0x32E               0x32E
-#define FLAG_0x32F               0x32F
-#define FLAG_0x330               0x330
-#define FLAG_0x331               0x331
-#define FLAG_0x332               0x332
-#define FLAG_0x333               0x333
-#define FLAG_0x334               0x334
-#define FLAG_0x335               0x335
-#define FLAG_0x336               0x336
-#define FLAG_0x337               0x337
-#define FLAG_0x338               0x338
-#define FLAG_0x339               0x339
-#define FLAG_0x33A               0x33A
-#define FLAG_0x33B               0x33B
-#define FLAG_0x33C               0x33C
-#define FLAG_0x33D               0x33D
-#define FLAG_0x33E               0x33E
-#define FLAG_0x33F               0x33F
-#define FLAG_0x340               0x340
-#define FLAG_0x341               0x341
-#define FLAG_0x342               0x342
-#define FLAG_0x343               0x343
-#define FLAG_0x344               0x344
-#define FLAG_0x345               0x345
-#define FLAG_0x346               0x346
-#define FLAG_0x347               0x347
-#define FLAG_0x348               0x348
-#define FLAG_0x349               0x349
-#define FLAG_0x34A               0x34A
-#define FLAG_0x34B               0x34B
-#define FLAG_0x34C               0x34C
-#define FLAG_0x34D               0x34D
-#define FLAG_0x34E               0x34E
-#define FLAG_0x34F               0x34F
-#define FLAG_0x350               0x350
-#define FLAG_0x351               0x351
-#define FLAG_0x352               0x352
-#define FLAG_0x353               0x353
-#define FLAG_0x354               0x354
-#define FLAG_0x355               0x355
-#define FLAG_0x356               0x356
-#define FLAG_0x357               0x357
-#define FLAG_0x358               0x358
-#define FLAG_0x359               0x359
-#define FLAG_0x35A               0x35A
-#define FLAG_0x35B               0x35B
-#define FLAG_0x35C               0x35C
-#define FLAG_0x35D               0x35D
-#define FLAG_0x35E               0x35E
-#define FLAG_0x35F               0x35F
-#define FLAG_0x360               0x360
-#define FLAG_0x361               0x361
-#define FLAG_0x362               0x362
-#define FLAG_0x363               0x363
-#define FLAG_0x364               0x364
-#define FLAG_0x365               0x365
-#define FLAG_0x366               0x366
-#define FLAG_0x367               0x367
-#define FLAG_0x368               0x368
-#define FLAG_0x369               0x369
-#define FLAG_0x36A               0x36A
-#define FLAG_0x36B               0x36B
-#define FLAG_0x36C               0x36C
-#define FLAG_0x36D               0x36D
-#define FLAG_0x36E               0x36E
-#define FLAG_0x36F               0x36F
+#define NUZLOCKE_FLAG_START                  0x300
+#define NUZLOCKE_FLAG(mapsec)                (mapsec - MAPSECS_KANTO + NUZLOCKE_FLAG_START)
+
+// Nuzlocke flags
+#define FLAG_NUZLOCKE_PALLET_TOWN            0x300
+#define FLAG_NUZLOCKE_VIRIDIAN_CITY          0x301
+#define FLAG_NUZLOCKE_UNUSED_1               0x302 // Pewter City has no encounters
+#define FLAG_NUZLOCKE_CERULEAN_CITY          0x303
+#define FLAG_NUZLOCKE_UNUSED_2               0x304 // Lavender Town has no encounters
+#define FLAG_NUZLOCKE_VERMILLION_CITY        0x305
+#define FLAG_NUZLOCKE_CELADON_CITY           0x306
+#define FLAG_NUZLOCKE_FUCHSIA_CITY           0x307
+#define FLAG_NUZLOCKE_CINNABAR_ISLAND        0x308
+#define FLAG_NUZLOCKE_UNUSED_3               0x309 // Indigo Plateau has no encounters
+#define FLAG_NUZLOCKE_UNUSED_4               0x30A // Saffron City has no encounters
+#define FLAG_NUZLOCKE_UNUSED_5               0x30B // Route 4 Pokemon Center has no encounters
+#define FLAG_NUZLOCKE_UNUSED_6               0x30C // Route 10 Pokemon Center has no encounters
+#define FLAG_NUZLOCKE_ROUTE_1                0x30D
+#define FLAG_NUZLOCKE_ROUTE_2                0x30E
+#define FLAG_NUZLOCKE_ROUTE_3                0x30F
+#define FLAG_NUZLOCKE_ROUTE_4                0x310
+#define FLAG_NUZLOCKE_ROUTE_5                0x311
+#define FLAG_NUZLOCKE_ROUTE_6                0x312
+#define FLAG_NUZLOCKE_ROUTE_7                0x313
+#define FLAG_NUZLOCKE_ROUTE_8                0x314
+#define FLAG_NUZLOCKE_ROUTE_9                0x315
+#define FLAG_NUZLOCKE_ROUTE_10               0x316
+#define FLAG_NUZLOCKE_ROUTE_11               0x317
+#define FLAG_NUZLOCKE_ROUTE_12               0x318
+#define FLAG_NUZLOCKE_ROUTE_13               0x319
+#define FLAG_NUZLOCKE_ROUTE_14               0x31A
+#define FLAG_NUZLOCKE_ROUTE_15               0x31B
+#define FLAG_NUZLOCKE_ROUTE_16               0x31C
+#define FLAG_NUZLOCKE_ROUTE_17               0x31D
+#define FLAG_NUZLOCKE_ROUTE_18               0x31E
+#define FLAG_NUZLOCKE_ROUTE_19               0x31F
+#define FLAG_NUZLOCKE_ROUTE_20               0x320
+#define FLAG_NUZLOCKE_ROUTE_21               0x321
+#define FLAG_NUZLOCKE_ROUTE_22               0x322
+#define FLAG_NUZLOCKE_ROUTE_23               0x323
+#define FLAG_NUZLOCKE_ROUTE_24               0x324
+#define FLAG_NUZLOCKE_ROUTE_25               0x325
+#define FLAG_NUZLOCKE_VIRIDIAN_FOREST        0x326
+#define FLAG_NUZLOCKE_MT_MOON                0x327
+#define FLAG_NUZLOCKE_UNUSED_7               0x328 // S.S. Anne has no encounters
+#define FLAG_NUZLOCKE_UNUSED_8               0x329 // Underground Path has no encounters
+#define FLAG_NUZLOCKE_UNUSED_9               0x32A // Underground Path 2 has no encounters
+#define FLAG_NUZLOCKE_DIGLETTS_CAVE          0x32B
+#define FLAG_NUZLOCKE_KANTO_VICTORY_ROAD     0x32C
+#define FLAG_NUZLOCKE_UNUSED_10              0x32D // Rocket Hideout has no encounters
+#define FLAG_NUZLOCKE_UNUSED_11              0x32E // Silph. Co has no encounters
+#define FLAG_NUZLOCKE_POKEMON_MANSION        0x32F
+#define FLAG_NUZLOCKE_KANTO_SAFARI_ZONE      0x330
+#define FLAG_NUZLOCKE_POKEMON_LEAGUE         0x331
+#define FLAG_NUZLOCKE_ROCK_TUNNEL            0x332
+#define FLAG_NUZLOCKE_SEAFOAM_ISLANDS        0x333
+#define FLAG_NUZLOCKE_POKEMON_TOWER          0x334
+#define FLAG_NUZLOCKE_CERULEAN_CAVE          0x335
+#define FLAG_NUZLOCKE_POWER_PLANT            0x336
+#define FLAG_NUZLOCKE_ONE_ISLAND             0x337
+#define FLAG_NUZLOCKE_UNUSED_12              0x338 // Two Island has no encounters
+#define FLAG_NUZLOCKE_UNUSED_13              0x339 // Three Island has no encounters
+#define FLAG_NUZLOCKE_FOUR_ISLAND            0x33A
+#define FLAG_NUZLOCKE_FIVE_ISLAND            0x33B
+#define FLAG_NUZLOCKE_UNUSED_14              0x33C // Seven Island has no encounters
+#define FLAG_NUZLOCKE_UNUSED_15              0x33D // Six Island has no encounters
+#define FLAG_NUZLOCKE_KINDLE_ROAD            0x33E
+#define FLAG_NUZLOCKE_TREASURE_BEACH         0x33F
+#define FLAG_NUZLOCKE_CAPE_BRINK             0x340
+#define FLAG_NUZLOCKE_BOND_BRIDGE            0x341
+#define FLAG_NUZLOCKE_THREE_ISLE_PORT        0x342
+#define FLAG_NUZLOCKE_UNUSED_16              0x343 // Sevii Isle 6 is unused
+#define FLAG_NUZLOCKE_UNUSED_17              0x344 // Sevii Isle 7 is unused
+#define FLAG_NUZLOCKE_UNUSED_18              0x345 // Sevii Isle 8 is unused
+#define FLAG_NUZLOCKE_UNUSED_19              0x346 // Sevii Isle 9 is unused
+#define FLAG_NUZLOCKE_RESORT_GORGEOUS        0x347
+#define FLAG_NUZLOCKE_WATER_LABYRINTH        0x348
+#define FLAG_NUZLOCKE_FIVE_ISLE_MEADOW       0x349
+#define FLAG_NUZLOCKE_MEMORIAL_PILLAR        0x34A
+#define FLAG_NUZLOCKE_OUTCAST_ISLAND         0x34B
+#define FLAG_NUZLOCKE_GREEN_PATH             0x34C
+#define FLAG_NUZLOCKE_WATER_PATH             0x34D
+#define FLAG_NUZLOCKE_RUIN_VALLEY            0x34E
+#define FLAG_NUZLOCKE_TRAINER_TOWER          0x34F
+#define FLAG_NUZLOCKE_CANYON_ENTRANCE        0x350
+#define FLAG_NUZLOCKE_SEVAULT_CANYON         0x351
+#define FLAG_NUZLOCKE_TANOBY_RUINS           0x352
+#define FLAG_NUZLOCKE_UNUSED_20              0x353 // Sevii Isle 22 is unused
+#define FLAG_NUZLOCKE_UNUSED_21              0x354 // Sevii Isle 23 is unused
+#define FLAG_NUZLOCKE_UNUSED_22              0x355 // Sevii Isle 24 is unused
+#define FLAG_NUZLOCKE_NAVEL_ROCK             0x356
+#define FLAG_NUZLOCKE_MT_EMBER               0x357
+#define FLAG_NUZLOCKE_BERRY_FOREST           0x358
+#define FLAG_NUZLOCKE_ICEFALL_CAVE           0x359
+#define FLAG_NUZLOCKE_UNUSED_23              0x35A // Rocket Warehouse has no encounters
+#define FLAG_NUZLOCKE_UNUSED_24              0x35B // Trainer Tower interior has no encounters
+#define FLAG_NUZLOCKE_UNUSED_25              0x35C // Dotted Hole has no encounters
+#define FLAG_NUZLOCKE_LOST_CAVE              0x35D
+#define FLAG_NUZLOCKE_PATTERN_BUSH           0x35E
+#define FLAG_NUZLOCKE_ALTERING_CAVE          0x35F
+#define FLAG_NUZLOCKE_UNUSED_26              0x360 // Tanoby Chambers are handled individually
+#define FLAG_NUZLOCKE_UNUSED_27              0x361 // Three Isle Path has no encounters
+#define FLAG_NUZLOCKE_UNUSED_28              0x362 // Tanoby Key has no encounters
+#define FLAG_NUZLOCKE_BIRTH_ISLAND           0x363
+#define FLAG_NUZLOCKE_MONEAN_CHAMBER         0x364
+#define FLAG_NUZLOCKE_LIPTOO_CHAMBER         0x365
+#define FLAG_NUZLOCKE_WEEPTH_CHAMBER         0x366
+#define FLAG_NUZLOCKE_DILFORD_CHAMBER        0x367
+#define FLAG_NUZLOCKE_SCUFIB_CHAMBER         0x368
+#define FLAG_NUZLOCKE_RIXY_CHAMBER           0x369
+#define FLAG_NUZLOCKE_VIAPOIS_CHAMBER        0x36A
+#define FLAG_NUZLOCKE_SAFARI_ZONE_AREA_1     0x36B
+#define FLAG_NUZLOCKE_SAFARI_ZONE_AREA_2     0x36C
+#define FLAG_NUZLOCKE_SAFARI_ZONE_AREA_3     0x36D
+#define FLAG_NUZLOCKE_SAFARI_ZONE_AREA_4     0x36E
+#define FLAG_NUZLOCKE_GLOBAL                 0x36F // Controls whether "Nuzlocke Mode" is active at all
 #define FLAG_0x370               0x370
 #define FLAG_0x371               0x371
 #define FLAG_0x372               0x372

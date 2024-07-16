@@ -1,6 +1,7 @@
 #include "global.h"
 #include "event_data.h"
 #include "item_menu.h"
+#include "constants/region_map_sections.h"
 #include "quest_log.h"
 
 static bool8 IsFlagOrVarStoredInQuestLog(u16 idx, u8 a1);
@@ -308,6 +309,42 @@ bool8 FlagGet(u16 idx)
     if (!(*ptr & 1 << (idx & 7)))
         return FALSE;
     return TRUE;
+}
+
+bool8 NuzlockeFlagSet(u8 mapsec)
+{
+    u8 *ptr = GetFlagAddr(NUZLOCKE_FLAG(mapsec));
+    if (ptr != NULL)
+        *ptr |= 1 << (NUZLOCKE_FLAG(mapsec) & 7);
+    return FALSE;
+}
+
+bool8 NuzlockeFlagClear(u8 mapsec)
+{
+    u8 *ptr = GetFlagAddr(NUZLOCKE_FLAG(mapsec));
+    if (ptr != NULL)
+        *ptr &= ~(1 << (NUZLOCKE_FLAG(mapsec) & 7));
+    return FALSE;
+}
+
+bool8 NuzlockeFlagGet(u8 mapsec)
+{
+    u8 *ptr = GetFlagAddr(NUZLOCKE_FLAG(mapsec));
+    if (ptr == NULL)
+        return FALSE;
+    if (!(*ptr & 1 << (NUZLOCKE_FLAG(mapsec) & 7)))
+        return FALSE;
+    return TRUE;
+}
+
+void GlobalNuzlockeSet(void)
+{
+    FlagSet(FLAG_NUZLOCKE_GLOBAL);
+}
+
+void GlobalNuzlockeClear(void)
+{
+    FlagClear(FLAG_NUZLOCKE_GLOBAL);
 }
 
 void ResetSpecialVars(void)

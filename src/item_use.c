@@ -31,6 +31,7 @@
 #include "teachy_tv.h"
 #include "tm_case.h"
 #include "vs_seeker.h"
+#include "battle_setup.h"
 #include "constants/sound.h"
 #include "constants/items.h"
 #include "constants/item_effects.h"
@@ -759,9 +760,20 @@ void BattleUseFunc_PokeBallEtc(u8 taskId)
 {
     if (!IsPlayerPartyAndPokemonStorageFull())
     {
-        RemoveBagItem(gSpecialVar_ItemId, 1);
-        Bag_BeginCloseWin0Animation();
-        ItemMenu_StartFadeToExitCallback(taskId);
+        if (!gIsCaptureBlockedByNuzlocke)
+        {
+            RemoveBagItem(gSpecialVar_ItemId, 1);
+            Bag_BeginCloseWin0Animation();
+            ItemMenu_StartFadeToExitCallback(taskId);
+        }
+        else if (gIsSpeciesClauseActive)
+        {
+            DisplayItemMessageInCurrentContext(taskId, FALSE, 4, gText_CantThrowPokeballSpeciesClause);
+        }
+        else
+        {
+            DisplayItemMessageInCurrentContext(taskId, FALSE, 4, gText_CantThrowPokeballNuzlocke);
+        }
     }
     else
         DisplayItemMessageInBag(taskId, FONT_NORMAL, gText_BoxFull, Task_ReturnToBagFromContextMenu);

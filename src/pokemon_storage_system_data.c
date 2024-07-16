@@ -33,7 +33,7 @@ static void MoveMon(void);
 static void PlaceMon(void);
 static void SetMovedMonData(u8 boxId, u8 cursorPos);
 static void SetPlacedMonData(u8 boxId, u8 cursorPos);
-static void PurgeMonOrBoxMon(u8 boxId, u8 cursorPos);
+void PurgeMonOrBoxMon(u8 boxId, u8 cursorPos);
 static void SetShiftedMonData(u8 boxId, u8 cursorPos);
 static void TrySetDisplayMonData(void);
 static void SetDisplayMonData(void *pokemon, u8 mode);
@@ -633,7 +633,7 @@ static void SetPlacedMonData(u8 boxId, u8 position)
     }
 }
 
-static void PurgeMonOrBoxMon(u8 boxId, u8 position)
+void PurgeMonOrBoxMon(u8 boxId, u8 position)
 {
     if (boxId == TOTAL_BOXES_COUNT)
         ZeroMonData(&gPlayerParty[position]);
@@ -2162,4 +2162,32 @@ void RemoveMenu(void)
 {
     ClearStdWindowAndFrameToTransparent(gStorage->menuWindowId, TRUE);
     RemoveWindow(gStorage->menuWindowId);
+}
+
+u16 GetFirstBoxPokemon(void)
+{
+    int i, j;
+
+    for (i = 0; i < TOTAL_BOXES_COUNT; i++)
+    {
+        for (j = 0; j < IN_BOX_COUNT; j++)
+        {
+            if (GetBoxMonData(&gPokemonStoragePtr->boxes[i][j], MON_DATA_SPECIES) != SPECIES_NONE &&
+                !GetBoxMonData(&gPokemonStoragePtr->boxes[i][j], MON_DATA_IS_EGG))
+                return (i * IN_BOX_COUNT) + j;
+        }
+    }
+    return IN_BOX_COUNT * TOTAL_BOXES_COUNT; // none found
+}
+
+void MoveFirstBoxPokemon(void)
+{
+    u16 position = GetFirstBoxPokemon();
+    if (position != IN_BOX_COUNT * TOTAL_BOXES_COUNT)
+    {
+        int boxNum = position / IN_BOX_COUNT;
+        int boxId = position - (boxNum * IN_BOX_COUNT);
+        BoxMonAtToMon(boxNum, boxId, &gPlayerParty[0]);
+        PurgeMonOrBoxMon(boxNum, boxId);
+    }
 }

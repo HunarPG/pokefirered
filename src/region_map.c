@@ -12,6 +12,7 @@
 #include "menu.h"
 #include "strings.h"
 #include "map_preview_screen.h"
+#include "item_menu.h"
 #include "constants/songs.h"
 #include "constants/region_map_sections.h"
 #include "constants/heal_locations.h"

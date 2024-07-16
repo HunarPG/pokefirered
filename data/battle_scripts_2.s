@@ -236,3 +236,11 @@ BattleScript_LeftoverWallyPrepToThrow::
 	printstring STRINGID_YOUTHROWABALLNOWRIGHT
 	waitmessage B_WAIT_TIME_LONG
 	end2
+
+BattleScript_NuzlockeCantCatch::
+	printstring STRINGID_NUZLOCKEENCOUNTERUSED
+	end2
+
+BattleScript_SpeciesClause::
+	printstring STRINGID_SPECIESCLAUSE
+	end2

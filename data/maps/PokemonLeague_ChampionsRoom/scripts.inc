@@ -65,6 +65,7 @@ PokemonLeague_ChampionsRoom_EventScript_EnterRoom::
 	clearflag FLAG_TEMP_5
 	setflag FLAG_DEFEATED_CHAMP
 	setflag FLAG_TEMP_4
+	call_if_set FLAG_SYS_CAN_LINK_WITH_RS, PokemonLeague_ChampionsRoom_EventScript_ClearNuzlockeIfSet
 	msgbox PokemonLeague_ChampionsRoom_Text_PostBattle
 	playbgm MUS_SLOW_PALLET, 0
 	addobject LOCALID_PROF_OAK
@@ -145,6 +146,14 @@ PokemonLeague_ChampionsRoom_EventScript_RematchBulbasaur::
 
 PokemonLeague_ChampionsRoom_EventScript_RematchCharmander::
 	trainerbattle_no_intro TRAINER_CHAMPION_REMATCH_CHARMANDER, PokemonLeague_ChampionsRoom_Text_Defeat
+	return
+
+PokemonLeague_ChampionsRoom_EventScript_ClearNuzlockeIfSet::
+	call_if_set FLAG_NUZLOCKE_GLOBAL PokemonLeague_ChampionsRoom_EventScript_ClearNuzlocke
+	return
+	
+PokemonLeague_ChampionsRoom_EventScript_ClearNuzlocke::
+	callnative GlobalNuzlockeClear
 	return
 
 PokemonLeague_ChampionsRoom_Movement_PlayerEnter::

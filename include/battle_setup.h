@@ -33,5 +33,7 @@ void ShowTrainerCantBattleSpeech(void);
 void PlayTrainerEncounterMusic(void);
 const u8 *GetTrainerALoseText(void);
 const u8 *GetTrainerWonSpeech(void);
+extern u8 gIsCaptureBlockedByNuzlocke;
+extern u8 gIsSpeciesClauseActive;
 
 #endif // GUARD_BATTLE_SETUP_H

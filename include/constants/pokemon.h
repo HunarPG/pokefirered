@@ -280,6 +280,7 @@
 #define EVO_BEAUTY           15 // Pokémon levels up with beauty ≥ specified value
 
 #define EVOS_PER_MON 5
+#define EVOS_PER_LINE 6
 
 #define EVO_MODE_NORMAL     0
 #define EVO_MODE_TRADE      1

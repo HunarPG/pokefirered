@@ -47,6 +47,7 @@
 #include "trainer_pokemon_sprites.h"
 #include "vs_seeker.h"
 #include "wild_encounter.h"
+#include "pokemon_storage_system.h"
 #include "constants/abilities.h"
 #include "constants/cable_club.h"
 #include "constants/event_objects.h"
@@ -245,12 +246,31 @@ static const u16 sWhiteOutMoneyLossBadgeFlagIDs[] = {
 
 static void DoWhiteOut(void)
 {
-    RunScriptImmediately(EventScript_ResetEliteFourEnd);
-    RemoveMoney(&gSaveBlock1Ptr->money, ComputeWhiteOutMoneyLoss());
-    HealPlayerParty();
-    Overworld_ResetStateAfterWhitingOut();
-    Overworld_SetWhiteoutRespawnPoint();
-    WarpIntoMap();
+    if (FlagGet(FLAG_NUZLOCKE_GLOBAL))
+    {
+        if (GetFirstBoxPokemon() == IN_BOX_COUNT * TOTAL_BOXES_COUNT)
+        {
+            DoSoftReset();
+        }
+        else
+        {
+            RunScriptImmediately(EventScript_ResetEliteFourEnd);
+            RemoveMoney(&gSaveBlock1Ptr->money, ComputeWhiteOutMoneyLoss());
+            MoveFirstBoxPokemon();
+            Overworld_ResetStateAfterWhitingOut();
+            Overworld_SetWhiteoutRespawnPoint();
+            WarpIntoMap();
+        }
+    }
+    else
+    {
+        RunScriptImmediately(EventScript_ResetEliteFourEnd);
+        RemoveMoney(&gSaveBlock1Ptr->money, ComputeWhiteOutMoneyLoss());
+        HealPlayerParty();
+        Overworld_ResetStateAfterWhitingOut();
+        Overworld_SetWhiteoutRespawnPoint();
+        WarpIntoMap();
+    }
 }
 
 u32 ComputeWhiteOutMoneyLoss(void)
@@ -1272,6 +1292,23 @@ static u8 GetSavedWarpRegionMapSectionId(void)
 u8 GetCurrentRegionMapSectionId(void)
 {
     return Overworld_GetMapHeaderByGroupAndId(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum)->regionMapSectionId;
+}
+
+u8 GetCurrentRegionMapSectionIdNuzlocke(void)
+{
+    switch (gSaveBlock1Ptr->location.mapNum)
+    {
+    default:
+        return Overworld_GetMapHeaderByGroupAndId(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum)->regionMapSectionId;
+    case MAP_NUM(SAFARI_ZONE_CENTER):
+        return MAPSEC_SAFARI_ZONE_AREA_1;
+    case MAP_NUM(SAFARI_ZONE_EAST):
+        return MAPSEC_SAFARI_ZONE_AREA_2;
+    case MAP_NUM(SAFARI_ZONE_NORTH):
+        return MAPSEC_SAFARI_ZONE_AREA_3;
+    case MAP_NUM(SAFARI_ZONE_WEST):
+        return MAPSEC_SAFARI_ZONE_AREA_4;
+    }
 }
 
 u8 GetCurrentMapBattleScene(void)
