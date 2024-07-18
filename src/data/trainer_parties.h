@@ -270,16 +270,27 @@ static const struct TrainerMonNoItemDefaultMoves sParty_YoungsterBen2[] = {
     },
 };
 
-static const struct TrainerMonNoItemDefaultMoves sParty_BugCatcherRick[] = {
+static const struct TrainerMonItemCustomMoves sParty_BugCatcherRick[] = {
     {
-        .iv = 0,
-        .lvl = 6,
-        .species = SPECIES_WEEDLE,
+        .iv = 198,
+        .lvl = 11,
+        .species = SPECIES_SURSKIT,
+        .heldItem = ITEM_MYSTIC_WATER,
+        .moves = {MOVE_WATER_PULSE, MOVE_MEGA_DRAIN, MOVE_MUD_SHOT, MOVE_PSYBEAM},
     },
     {
-        .iv = 0,
-        .lvl = 6,
-        .species = SPECIES_CATERPIE,
+        .iv = 198,
+        .lvl = 11,
+        .species = SPECIES_VENONAT,
+        .heldItem = ITEM_ORAN_BERRY,
+        .moves = {MOVE_PSYBEAM, MOVE_MEGA_DRAIN, MOVE_MUD_SHOT, MOVE_PSYBEAM},
+    },
+    {
+        .iv = 198,
+        .lvl = 11,
+        .species = SPECIES_YANMA,
+        .heldItem = ITEM_NONE,
+        .moves = {MOVE_SILVER_WIND, MOVE_QUICK_ATTACK, MOVE_SWEET_KISS, MOVE_GIGA_DRAIN},
     },
 };
 
