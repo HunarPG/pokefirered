@@ -294,21 +294,27 @@ static const struct TrainerMonItemCustomMoves sParty_BugCatcherRick[] = {
     },
 };
 
-static const struct TrainerMonNoItemDefaultMoves sParty_BugCatcherDoug[] = {
+static const struct TrainerMonItemCustomMoves sParty_BugCatcherDoug[] = {
     {
-        .iv = 0,
-        .lvl = 7,
-        .species = SPECIES_WEEDLE,
+        .iv = 198,
+        .lvl = 11,
+        .species = SPECIES_PINECO,
+        .heldItem = ITEM_ORAN_BERRY,
+        .moves = {MOVE_PIN_MISSILE, MOVE_TACKLE, MOVE_SPIKES, MOVE_NONE},
     },
     {
-        .iv = 0,
-        .lvl = 7,
-        .species = SPECIES_KAKUNA,
+        .iv = 198,
+        .lvl = 11,
+        .species = SPECIES_SPINARAK,
+        .heldItem = ITEM_ORAN_BERRY,
+        .moves = {MOVE_LEECH_LIFE, MOVE_MEGA_DRAIN, MOVE_TOXIC, MOVE_PURSUIT},
     },
     {
-        .iv = 0,
-        .lvl = 7,
-        .species = SPECIES_WEEDLE,
+        .iv = 198,
+        .lvl = 11,
+        .species = SPECIES_BUTTERFREE,
+        .heldItem = ITEM_TWISTED_SPOON,
+        .moves = {MOVE_CONFUSION, MOVE_POISON_POWDER, MOVE_SUPERSONIC, MOVE_NONE},
     },
 };
 
