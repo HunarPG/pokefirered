@@ -1,4 +1,4 @@
-#!/bin/bash
+#!bash
 # Compares baserom.gba and pokefirered.gba
 
 # create baserom_compare.dump if necessary

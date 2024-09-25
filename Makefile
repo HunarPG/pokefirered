@@ -66,7 +66,7 @@ ifeq ($(MODERN),0)
 CPPFLAGS += -I tools/agbcc -I tools/agbcc/include -nostdinc -undef
 endif
 
-SHELL := /bin/bash -o pipefail
+SHELL := bash -o pipefail
 
 ROM := poke$(BUILD_NAME).gba
 OBJ_DIR := build/$(BUILD_NAME)

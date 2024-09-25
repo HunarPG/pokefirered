@@ -1,4 +1,4 @@
-#!/bin/bash
+#!bash
 # $1: phrase to find
 # $2: phrase to replace $1
 if [ "$1" = "" -o "$2" = "" ]; then
