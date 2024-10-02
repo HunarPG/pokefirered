@@ -1,4 +1,4 @@
-#!bash -ex
+#!/bin/bash -ex
 
 build_name=$1
 map_file=$build_name.map

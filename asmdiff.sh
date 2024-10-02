@@ -1,4 +1,4 @@
-#!bash
+#!/bin/bash
 
 if [ "$1" == "firered" ] || [ "$1" == "leafgreen" ] || [ "$1" == "firered_rev1" ] || [ "$1" == "leafgreen_rev1" ]; then
   buildname="$1"
