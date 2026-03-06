@@ -108,14 +108,14 @@ static EWRAM_DATA s16 sCreditsOverworld_CmdIndex = 0;
 
 EWRAM_DATA struct LinkPlayerObjectEvent gLinkPlayerObjectEvents[4] = {};
 
-u16 *gBGTilemapBuffers1;
-u16 *gBGTilemapBuffers2;
-u16 *gBGTilemapBuffers3;
-void (*gFieldCallback)(void);
-bool8 (*gFieldCallback2)(void);
-u16 gHeldKeyCodeToSend;
-u8 gLocalLinkPlayerId;
-u8 gFieldLinkPlayerCount;
+COMMON_DATA u16 *gBGTilemapBuffers1 = NULL;
+COMMON_DATA u16 *gBGTilemapBuffers2 = NULL;
+COMMON_DATA u16 *gBGTilemapBuffers3 = NULL;
+COMMON_DATA void (*gFieldCallback)(void) = NULL;
+COMMON_DATA bool8 (*gFieldCallback2)(void) = NULL;
+COMMON_DATA u16 gHeldKeyCodeToSend = 0;
+COMMON_DATA u8 gLocalLinkPlayerId = 0;
+COMMON_DATA u8 gFieldLinkPlayerCount = 0;
 
 static u8 sPlayerLinkStates[MAX_LINK_PLAYERS];
 static KeyInterCB sPlayerKeyInterceptCallback;
@@ -514,8 +514,8 @@ static const struct MapLayout *GetMapLayout(void)
 // Routines related to warps
 
 static const struct WarpData sDummyWarpData = {
-    .mapGroup = MAP_GROUP(UNDEFINED),
-    .mapNum = MAP_NUM(UNDEFINED),
+    .mapGroup = MAP_GROUP(MAP_UNDEFINED),
+    .mapNum = MAP_NUM(MAP_UNDEFINED),
     .warpId = 0xFF,
     .x = -1,
     .y = -1
@@ -540,9 +540,9 @@ static void SetWarpData(struct WarpData *warp, s8 mapGroup, s8 mapNum, s8 warpId
 
 static bool32 IsDummyWarp(struct WarpData *warp)
 {
-    if (warp->mapGroup != (s8)MAP_GROUP(UNDEFINED))
+    if (warp->mapGroup != (s8)MAP_GROUP(MAP_UNDEFINED))
         return FALSE;
-    else if (warp->mapNum != (s8)MAP_NUM(UNDEFINED))
+    else if (warp->mapNum != (s8)MAP_NUM(MAP_UNDEFINED))
         return FALSE;
     else if (warp->warpId != -1)
         return FALSE;
@@ -632,7 +632,7 @@ void SetWarpDestinationToHealLocation(u8 healLocationId)
 {
     const struct HealLocation *warp = GetHealLocation(healLocationId);
     if (warp)
-        SetWarpDestination(warp->group, warp->map, -1, warp->x, warp->y);
+        SetWarpDestination(warp->mapGroup, warp->mapNum, -1, warp->x, warp->y);
 }
 
 void SetWarpDestinationToLastHealLocation(void)
@@ -649,7 +649,7 @@ void SetLastHealLocationWarp(u8 healLocationId)
 {
     const struct HealLocation *healLocation = GetHealLocation(healLocationId);
     if (healLocation)
-        SetWarpData(&gSaveBlock1Ptr->lastHealLocation, healLocation->group, healLocation->map, -1, healLocation->x, healLocation->y);
+        SetWarpData(&gSaveBlock1Ptr->lastHealLocation, healLocation->mapGroup, healLocation->mapNum, -1, healLocation->x, healLocation->y);
 }
 
 void UpdateEscapeWarp(s16 x, s16 y)
@@ -657,7 +657,7 @@ void UpdateEscapeWarp(s16 x, s16 y)
     u8 currMapType = GetCurrentMapType();
     u8 destMapType = GetMapTypeByGroupAndId(sWarpDestination.mapGroup, sWarpDestination.mapNum);
     u8 delta;
-    if (IsMapTypeOutdoors(currMapType) && IsMapTypeOutdoors(destMapType) != TRUE && !(gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(VIRIDIAN_FOREST) && gSaveBlock1Ptr->location.mapNum == MAP_NUM(VIRIDIAN_FOREST)))
+    if (IsMapTypeOutdoors(currMapType) && IsMapTypeOutdoors(destMapType) != TRUE && !(gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_VIRIDIAN_FOREST) && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_VIRIDIAN_FOREST)))
     {
         delta = GetPlayerFacingDirection() != DIR_SOUTH;
         SetEscapeWarp(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, -1, x - 7, y - 7 + delta);
@@ -711,7 +711,7 @@ void SetContinueGameWarpToHealLocation(u8 healLocationId)
 {
     const struct HealLocation *warp = GetHealLocation(healLocationId);
     if (warp)
-        SetWarpData(&gSaveBlock1Ptr->continueGameWarp, warp->group, warp->map, -1, warp->x, warp->y);
+        SetWarpData(&gSaveBlock1Ptr->continueGameWarp, warp->mapGroup, warp->mapNum, -1, warp->x, warp->y);
 }
 
 void SetContinueGameWarpToDynamicWarp(int unused)
@@ -915,10 +915,10 @@ bool8 MetatileBehavior_IsSurfableInSeafoamIslands(u16 metatileBehavior)
 {
     if (MetatileBehavior_IsSurfable(metatileBehavior) != TRUE)
         return FALSE;
-    if ((gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(SEAFOAM_ISLANDS_B3F)
-          && gSaveBlock1Ptr->location.mapNum == MAP_NUM(SEAFOAM_ISLANDS_B3F))
-     || (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(SEAFOAM_ISLANDS_B4F)
-          && gSaveBlock1Ptr->location.mapNum == MAP_NUM(SEAFOAM_ISLANDS_B4F)))
+    if ((gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_SEAFOAM_ISLANDS_B3F)
+          && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_SEAFOAM_ISLANDS_B3F))
+     || (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_SEAFOAM_ISLANDS_B4F)
+          && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_SEAFOAM_ISLANDS_B4F)))
         return TRUE;
     return FALSE;
 }
@@ -1040,7 +1040,7 @@ void Overworld_PlaySpecialMapMusic(void)
     if (gDisableMapMusicChangeOnMapLoad == MUSIC_DISABLE_KEEP)
         return;
 
-    if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(POKEMON_LEAGUE_CHAMPIONS_ROOM) && gSaveBlock1Ptr->location.mapNum == MAP_NUM(POKEMON_LEAGUE_CHAMPIONS_ROOM))
+    if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_POKEMON_LEAGUE_CHAMPIONS_ROOM) && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_POKEMON_LEAGUE_CHAMPIONS_ROOM))
     {
         PlayerGetDestCoords(&x, &y);
         if (y - 7 < 11 && gMPlayInfo_BGM.songHeader == &mus_victory_gym_leader)
@@ -1300,13 +1300,13 @@ u8 GetCurrentRegionMapSectionIdNuzlocke(void)
     {
     default:
         return Overworld_GetMapHeaderByGroupAndId(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum)->regionMapSectionId;
-    case MAP_NUM(SAFARI_ZONE_CENTER):
+    case MAP_NUM(MAP_SAFARI_ZONE_CENTER):
         return MAPSEC_SAFARI_ZONE_AREA_1;
-    case MAP_NUM(SAFARI_ZONE_EAST):
+    case MAP_NUM(MAP_SAFARI_ZONE_EAST):
         return MAPSEC_SAFARI_ZONE_AREA_2;
-    case MAP_NUM(SAFARI_ZONE_NORTH):
+    case MAP_NUM(MAP_SAFARI_ZONE_NORTH):
         return MAPSEC_SAFARI_ZONE_AREA_3;
-    case MAP_NUM(SAFARI_ZONE_WEST):
+    case MAP_NUM(MAP_SAFARI_ZONE_WEST):
         return MAPSEC_SAFARI_ZONE_AREA_4;
     }
 }

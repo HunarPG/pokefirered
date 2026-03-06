@@ -29,6 +29,7 @@
 #include "pokedex.h"
 #include "pokemon.h"
 #include "constants/battle_setup.h"
+#include "constants/event_objects.h"
 #include "constants/items.h"
 #include "constants/maps.h"
 #include "constants/songs.h"
@@ -224,14 +225,14 @@ static void CreateBattleStartTask(u8 transition, u16 song) // song == 0 means de
 
 static bool8 CheckSilphScopeInPokemonTower(u16 mapGroup, u16 mapNum)
 {
-    if (mapGroup == MAP_GROUP(POKEMON_TOWER_1F)
-     && (mapNum == MAP_NUM(POKEMON_TOWER_1F)
-      || mapNum == MAP_NUM(POKEMON_TOWER_2F)
-      || mapNum == MAP_NUM(POKEMON_TOWER_3F)
-      || mapNum == MAP_NUM(POKEMON_TOWER_4F)
-      || mapNum == MAP_NUM(POKEMON_TOWER_5F)
-      || mapNum == MAP_NUM(POKEMON_TOWER_6F)
-      || mapNum == MAP_NUM(POKEMON_TOWER_7F))
+    if (mapGroup == MAP_GROUP(MAP_POKEMON_TOWER_1F)
+     && (mapNum == MAP_NUM(MAP_POKEMON_TOWER_1F)
+      || mapNum == MAP_NUM(MAP_POKEMON_TOWER_2F)
+      || mapNum == MAP_NUM(MAP_POKEMON_TOWER_3F)
+      || mapNum == MAP_NUM(MAP_POKEMON_TOWER_4F)
+      || mapNum == MAP_NUM(MAP_POKEMON_TOWER_5F)
+      || mapNum == MAP_NUM(MAP_POKEMON_TOWER_6F)
+      || mapNum == MAP_NUM(MAP_POKEMON_TOWER_7F))
      && !(CheckBagHasItem(ITEM_SILPH_SCOPE, 1)))
         return TRUE;
     else
@@ -734,7 +735,7 @@ static void InitTrainerBattleVariables(void)
 {
     sTrainerBattleMode = 0;
     gTrainerBattleOpponent_A = 0;
-    sTrainerObjectEventLocalId = 0;
+    sTrainerObjectEventLocalId = LOCALID_NONE;
     sTrainerAIntroSpeech = NULL;
     sTrainerADefeatSpeech = NULL;
     sTrainerVictorySpeech = NULL;
@@ -801,7 +802,7 @@ static void TrainerBattleLoadArgs(const struct TrainerBattleParameter *specs, co
 
 static void SetMapVarsToTrainer(void)
 {
-    if (sTrainerObjectEventLocalId != 0)
+    if (sTrainerObjectEventLocalId != LOCALID_NONE)
     {
         gSpecialVar_LastTalked = sTrainerObjectEventLocalId;
         gSelectedObjectEvent = GetObjectEventIdByLocalIdAndMap(sTrainerObjectEventLocalId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);

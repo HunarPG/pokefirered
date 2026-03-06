@@ -794,7 +794,7 @@
 #define FLAG_OAKS_RATING_IS_VIA_PC                       0x2FF
 
 #define NUZLOCKE_FLAG_START                  0x300
-#define NUZLOCKE_FLAG(mapsec)                (mapsec - MAPSECS_KANTO + NUZLOCKE_FLAG_START)
+#define NUZLOCKE_FLAG(mapsec)                (mapsec - KANTO_MAPSEC_START + NUZLOCKE_FLAG_START)
 
 // Nuzlocke flags
 #define FLAG_NUZLOCKE_PALLET_TOWN            0x300
